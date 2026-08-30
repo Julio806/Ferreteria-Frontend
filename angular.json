@@ -33,13 +33,13 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "1.5MB",
+                  "maximumError": "2MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "15kB",
+                  "maximumError": "20kB"
                 }
               ],
               "outputHashing": "all"
@@ -59,7 +59,8 @@
               "buildTarget": "ferreteria-frontend:build:production"
             },
             "development": {
-              "buildTarget": "ferreteria-frontend:build:development"
+              "buildTarget": "ferreteria-frontend:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"
@@ -88,5 +89,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }

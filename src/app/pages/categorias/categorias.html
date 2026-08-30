@@ -1,0 +1,470 @@
+<div class="categorias">
+
+    <!-- ==========================================
+         ENCABEZADO
+         ========================================== -->
+
+    <div class="categorias-header">
+
+        <div>
+
+            <h1>
+                Categorías
+            </h1>
+
+            <p>
+                Administración de categorías de productos
+            </p>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="btn-primary"
+            (click)="abrirModal()"
+        >
+            + Nueva categoría
+        </button>
+
+    </div>
+
+
+    <!-- ==========================================
+         BUSCADOR
+         ========================================== -->
+
+    <div class="buscador">
+
+        <input
+            type="text"
+            [(ngModel)]="terminoBusqueda"
+            (keyup.enter)="buscarCategorias()"
+            placeholder="🔎 Buscar categoría..."
+        >
+
+
+        <button
+            type="button"
+            class="btn-primary"
+            (click)="buscarCategorias()"
+        >
+            Buscar
+        </button>
+
+
+        @if (terminoBusqueda) {
+
+            <button
+                type="button"
+                class="btn-secondary"
+                (click)="limpiarBusqueda()"
+            >
+                Limpiar
+            </button>
+
+        }
+
+    </div>
+
+
+    <!-- ==========================================
+         CARGANDO
+         ========================================== -->
+
+    @if (cargando) {
+
+        <div class="loading">
+
+            Cargando categorías...
+
+        </div>
+
+    }
+
+
+    <!-- ==========================================
+         ERROR
+         ========================================== -->
+
+    @if (error) {
+
+        <div class="error">
+
+            <p>
+                No se pudieron cargar las categorías.
+            </p>
+
+
+            <button
+                type="button"
+                (click)="obtenerCategorias()"
+            >
+                Reintentar
+            </button>
+
+        </div>
+
+    }
+
+
+    <!-- ==========================================
+         TABLA
+         ========================================== -->
+
+    @if (!cargando && !error) {
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Nombre
+                        </th>
+
+                        <th>
+                            Descripción
+                        </th>
+
+                        <th>
+                            Estado
+                        </th>
+
+                        <th>
+                            Acciones
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    @for (
+                        categoria of categorias;
+                        track categoria.id
+                    ) {
+
+                        <tr>
+
+
+                            <!-- NOMBRE -->
+
+                            <td>
+
+                                <strong>
+                                    {{ categoria.nombre }}
+                                </strong>
+
+                            </td>
+
+
+                            <!-- DESCRIPCIÓN -->
+
+                            <td>
+
+                                {{ categoria.descripcion || '—' }}
+
+                            </td>
+
+
+                            <!-- ESTADO -->
+
+                            <td>
+
+                                @if (categoria.activo) {
+
+                                    <span
+                                        class="badge activo"
+                                    >
+                                        Activa
+                                    </span>
+
+                                } @else {
+
+                                    <span
+                                        class="badge inactivo"
+                                    >
+                                        Inactiva
+                                    </span>
+
+                                }
+
+                            </td>
+
+
+                            <!-- ACCIONES -->
+
+                            <td>
+
+                                <div class="acciones">
+
+
+                                    <!-- EDITAR -->
+
+                                    <button
+                                        type="button"
+                                        title="Editar categoría"
+                                        (click)="editarCategoria(categoria)"
+                                    >
+                                        ✏️
+                                    </button>
+
+
+                                    <!-- ELIMINAR -->
+
+                                    <button
+                                        type="button"
+                                        class="btn-eliminar"
+                                        title="Eliminar categoría"
+                                        (click)="eliminarCategoria(categoria)"
+                                    >
+                                        🗑️
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    }
+
+
+                    <!-- ==================================
+                         SIN CATEGORÍAS
+                         ================================== -->
+
+                    @if (categorias.length === 0) {
+
+                        <tr>
+
+                            <td
+                                colspan="4"
+                                class="sin-categorias"
+                            >
+
+                                <div>
+
+                                    <div class="sin-categorias-icon">
+                                        🏷️
+                                    </div>
+
+                                    <p>
+                                        No se encontraron categorías.
+                                    </p>
+
+
+                                    @if (terminoBusqueda) {
+
+                                        <small>
+                                            Intenta con otro término.
+                                        </small>
+
+                                    }
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    }
+
+</div>
+
+
+<!-- ==========================================
+     MODAL CREAR / EDITAR
+     ========================================== -->
+
+@if (mostrarModal) {
+
+    <div
+        class="modal-overlay"
+        (click)="cerrarModal()"
+    >
+
+        <div
+            class="modal"
+            (click)="$event.stopPropagation()"
+        >
+
+
+            <!-- CABECERA -->
+
+            <div class="modal-header">
+
+                <div>
+
+                    <h2>
+
+                        @if (modoEdicion) {
+
+                            Editar categoría
+
+                        } @else {
+
+                            Nueva categoría
+
+                        }
+
+                    </h2>
+
+
+                    <p>
+
+                        @if (modoEdicion) {
+
+                            Modifica la información de la categoría
+
+                        } @else {
+
+                            Agrega una nueva categoría
+
+                        }
+
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="modal-close"
+                    (click)="cerrarModal()"
+                    [disabled]="guardando"
+                >
+                    ✕
+                </button>
+
+            </div>
+
+
+            <!-- FORMULARIO -->
+
+            <form
+                [formGroup]="categoriaForm"
+                (ngSubmit)="guardarCategoria()"
+            >
+
+
+                <!-- NOMBRE -->
+
+                <div class="form-group">
+
+                    <label>
+                        Nombre *
+                    </label>
+
+
+                    <input
+                        type="text"
+                        formControlName="nombre"
+                        placeholder="Ej. Herramientas"
+                    >
+
+
+                    @if (campoInvalido('nombre')) {
+
+                        <span class="field-error">
+
+                            El nombre es obligatorio.
+
+                        </span>
+
+                    }
+
+                </div>
+
+
+                <!-- DESCRIPCIÓN -->
+
+                <div class="form-group">
+
+                    <label>
+                        Descripción
+                    </label>
+
+
+                    <textarea
+                        formControlName="descripcion"
+                        rows="4"
+                        placeholder="Descripción de la categoría"
+                    ></textarea>
+
+                </div>
+
+
+                <!-- ERROR -->
+
+                @if (mensajeError) {
+
+                    <div class="form-error">
+
+                        ⚠️ {{ mensajeError }}
+
+                    </div>
+
+                }
+
+
+                <!-- BOTONES -->
+
+                <div class="modal-footer">
+
+
+                    <button
+                        type="button"
+                        class="btn-secondary"
+                        (click)="cerrarModal()"
+                        [disabled]="guardando"
+                    >
+                        Cancelar
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="btn-primary"
+                        [disabled]="guardando"
+                    >
+
+                        @if (guardando) {
+
+                            Guardando...
+
+                        } @else if (modoEdicion) {
+
+                            Guardar cambios
+
+                        } @else {
+
+                            Guardar categoría
+
+                        }
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+}

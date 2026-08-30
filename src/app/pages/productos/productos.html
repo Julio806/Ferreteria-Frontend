@@ -1,0 +1,619 @@
+<div class="productos">
+
+    <!-- ==========================================
+         ENCABEZADO
+         ========================================== -->
+
+    <div class="productos-header">
+
+        <div>
+            <h1>Productos</h1>
+
+            <p>
+                Administración del inventario
+            </p>
+        </div>
+
+        <button type="button" class="btn-primary" (click)="abrirModal()">
+            + Nuevo producto
+        </button>
+
+    </div>
+
+
+    <!-- ==========================================
+         BUSCADOR
+         ========================================== -->
+
+    <div class="buscador">
+
+        <input type="text" [(ngModel)]="terminoBusqueda" (keyup.enter)="buscarProductos()"
+            placeholder="🔎 Buscar producto por nombre...">
+
+        <button type="button" class="btn-primary" (click)="buscarProductos()">
+            Buscar
+        </button>
+
+        @if (terminoBusqueda) {
+
+        <button type="button" class="btn-secondary" (click)="limpiarBusqueda()">
+            Limpiar
+        </button>
+
+        }
+
+    </div>
+
+
+    <!-- ==========================================
+         CARGANDO
+         ========================================== -->
+
+    @if (cargando) {
+
+    <div class="loading">
+        Cargando productos...
+    </div>
+
+    }
+
+
+    <!-- ==========================================
+         ERROR
+         ========================================== -->
+
+    @if (error) {
+
+    <div class="error">
+
+        <p>
+            No se pudieron cargar los productos.
+        </p>
+
+        <button type="button" (click)="obtenerProductos()">
+            Reintentar
+        </button>
+
+    </div>
+
+    }
+
+
+    <!-- ==========================================
+         TABLA
+         ========================================== -->
+
+    @if (!cargando && !error) {
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Código</th>
+
+                    <th>Producto</th>
+
+                    <th>Marca</th>
+
+                    <th>Categoría</th>
+
+                    <th>Precio venta</th>
+
+                    <th>Stock</th>
+
+                    <th>Estado</th>
+
+                    <th>Acciones</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                @for (
+                producto of productos;
+                track producto.id
+                ) {
+
+                <tr>
+
+                    <!-- CÓDIGO -->
+
+                    <td>
+
+                        <span class="codigo">
+                            {{ producto.codigo }}
+                        </span>
+
+                    </td>
+
+
+                    <!-- PRODUCTO -->
+
+                    <td>
+
+                        <div class="producto-info">
+
+                            <strong>
+                                {{ producto.nombre }}
+                            </strong>
+
+                            @if (producto.descripcion) {
+
+                            <small>
+                                {{ producto.descripcion }}
+                            </small>
+
+                            }
+
+                        </div>
+
+                    </td>
+
+
+                    <!-- MARCA -->
+
+                    <td>
+                        {{ producto.marca || '—' }}
+                    </td>
+
+
+                    <!-- CATEGORÍA -->
+
+                    <td>
+                        {{ producto.categoriaNombre || '—' }}
+                    </td>
+
+
+                    <!-- PRECIO -->
+
+                    <td>
+
+                        {{ producto.precioVenta
+                        | currency:'MXN':'symbol':'1.2-2'
+                        }}
+
+                    </td>
+
+
+                    <!-- STOCK -->
+
+                    <td>
+
+                        <span [class.stock-bajo]="
+                                        producto.stock <= producto.stockMinimo
+                                    ">
+
+                            {{ producto.stock }}
+                            {{ producto.unidadMedida }}
+
+                        </span>
+
+                    </td>
+
+
+                    <!-- ESTADO -->
+
+                    <td>
+
+                        @if (producto.activo) {
+
+                        <span class="badge activo">
+                            Activo
+                        </span>
+
+                        } @else {
+
+                        <span class="badge inactivo">
+                            Inactivo
+                        </span>
+
+                        }
+
+                    </td>
+
+
+                    <!-- ACCIONES -->
+
+                    <td>
+
+                        <div class="acciones">
+
+                            <!-- EDITAR -->
+
+                            <button type="button" title="Editar producto" (click)="editarProducto(producto)">
+                                ✏️
+                            </button>
+
+
+                            <!-- ELIMINAR -->
+
+                            <button type="button" class="btn-eliminar" title="Eliminar producto"
+                                (click)="eliminarProducto(producto)">
+                                🗑️
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                }
+
+
+                <!-- ==================================
+                         SIN PRODUCTOS
+                         ================================== -->
+
+                @if (productos.length === 0) {
+
+                <tr>
+
+                    <td colspan="8" class="sin-productos">
+
+                        <div>
+
+                            <div class="sin-productos-icon">
+                                📦
+                            </div>
+
+                            <p>
+                                No se encontraron productos.
+                            </p>
+
+                            @if (terminoBusqueda) {
+
+                            <small>
+                                Intenta con otro nombre.
+                            </small>
+
+                            }
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    }
+
+</div>
+
+
+<!-- ==========================================
+     MODAL CREAR / EDITAR PRODUCTO
+     ========================================== -->
+
+@if (mostrarModal) {
+
+<div class="modal-overlay" (click)="cerrarModal()">
+
+    <div class="modal" (click)="$event.stopPropagation()">
+
+
+        <!-- CABECERA -->
+
+        <div class="modal-header">
+
+            <div>
+
+                <h2>
+
+                    @if (modoEdicion) {
+
+                    Editar producto
+
+                    } @else {
+
+                    Nuevo producto
+
+                    }
+
+                </h2>
+
+                <p>
+
+                    @if (modoEdicion) {
+
+                    Modifica la información del producto
+
+                    } @else {
+
+                    Agrega un nuevo producto al inventario
+
+                    }
+
+                </p>
+
+            </div>
+
+
+            <button type="button" class="modal-close" (click)="cerrarModal()" [disabled]="guardando">
+                ✕
+            </button>
+
+        </div>
+
+
+        <!-- FORMULARIO -->
+
+        <form [formGroup]="productoForm" (ngSubmit)="guardarProducto()">
+
+            <div class="form-grid">
+
+
+                <!-- CÓDIGO -->
+
+                <div class="form-group">
+
+                    <label>
+                        Código *
+                    </label>
+
+                    <input type="text" formControlName="codigo" placeholder="Ej. MAR-001">
+
+                    @if (campoInvalido('codigo')) {
+
+                    <span class="field-error">
+                        El código es obligatorio.
+                    </span>
+
+                    }
+
+                </div>
+
+
+                <!-- NOMBRE -->
+
+                <div class="form-group">
+
+                    <label>
+                        Nombre *
+                    </label>
+
+                    <input type="text" formControlName="nombre" placeholder="Ej. Martillo">
+
+                    @if (campoInvalido('nombre')) {
+
+                    <span class="field-error">
+                        El nombre es obligatorio.
+                    </span>
+
+                    }
+
+                </div>
+
+
+                <!-- DESCRIPCIÓN -->
+
+                <div class="form-group full">
+
+                    <label>
+                        Descripción
+                    </label>
+
+                    <textarea formControlName="descripcion" rows="3" placeholder="Descripción del producto"></textarea>
+
+                </div>
+
+
+                <!-- MARCA -->
+
+                <div class="form-group">
+
+                    <label>
+                        Marca
+                    </label>
+
+                    <input type="text" formControlName="marca" placeholder="Ej. Truper">
+
+                </div>
+
+
+                <!-- CATEGORÍA -->
+
+                <div class="form-group">
+
+                    <label>
+                        Categoría *
+                    </label>
+
+                    <select formControlName="categoriaId">
+
+                        <option [ngValue]="null">
+                            Selecciona una categoría
+                        </option>
+
+                        @for (
+                        categoria of categorias;
+                        track categoria.id
+                        ) {
+
+                        <option [ngValue]="categoria.id">
+                            {{ categoria.nombre }}
+                        </option>
+
+                        }
+
+                    </select>
+
+                    @if (campoInvalido('categoriaId')) {
+
+                    <span class="field-error">
+                        Selecciona una categoría.
+                    </span>
+
+                    }
+
+                </div>
+
+
+                <!-- PRECIO COMPRA -->
+
+                <div class="form-group">
+
+                    <label>
+                        Precio de compra *
+                    </label>
+
+                    <input type="number" formControlName="precioCompra" min="0" step="0.01" placeholder="0.00">
+
+                    @if (campoInvalido('precioCompra')) {
+
+                    <span class="field-error">
+                        Ingresa un precio válido.
+                    </span>
+
+                    }
+
+                </div>
+
+
+                <!-- PRECIO VENTA -->
+
+                <div class="form-group">
+
+                    <label>
+                        Precio de venta *
+                    </label>
+
+                    <input type="number" formControlName="precioVenta" min="0" step="0.01" placeholder="0.00">
+
+                    @if (campoInvalido('precioVenta')) {
+
+                    <span class="field-error">
+                        Ingresa un precio válido.
+                    </span>
+
+                    }
+
+                </div>
+
+
+                <!-- STOCK -->
+
+                <div class="form-group">
+
+                    <label>
+                        Stock *
+                    </label>
+
+                    <input type="number" formControlName="stock" min="0" placeholder="0">
+
+                </div>
+
+
+                <!-- STOCK MÍNIMO -->
+
+                <div class="form-group">
+
+                    <label>
+                        Stock mínimo *
+                    </label>
+
+                    <input type="number" formControlName="stockMinimo" min="0" placeholder="0">
+
+                </div>
+
+
+                <!-- UNIDAD DE MEDIDA -->
+
+                <div class="form-group">
+
+                    <label>
+                        Unidad de medida *
+                    </label>
+
+                    <select formControlName="unidadMedida">
+
+                        <option value="PIEZA">
+                            PIEZA
+                        </option>
+
+                        <option value="CAJA">
+                            CAJA
+                        </option>
+
+                        <option value="METRO">
+                            METRO
+                        </option>
+
+                        <option value="KILOGRAMO">
+                            KILOGRAMO
+                        </option>
+
+                        <option value="LITRO">
+                            LITRO
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- ERROR DEL BACKEND -->
+
+            @if (mensajeError) {
+
+            <div class="form-error">
+
+                ⚠️ {{ mensajeError }}
+
+            </div>
+
+            }
+
+
+            <!-- BOTONES -->
+
+            <div class="modal-footer">
+
+                <button type="button" class="btn-secondary" (click)="cerrarModal()" [disabled]="guardando">
+                    Cancelar
+                </button>
+
+
+                <button type="submit" class="btn-primary" [disabled]="guardando">
+
+                    @if (guardando) {
+
+                    Guardando...
+
+                    } @else if (modoEdicion) {
+
+                    Guardar cambios
+
+                    } @else {
+
+                    Guardar producto
+
+                    }
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+}

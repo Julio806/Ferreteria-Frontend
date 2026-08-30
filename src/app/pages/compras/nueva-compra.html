@@ -1,0 +1,532 @@
+<div class="nueva-compra-page">
+
+  <!-- ==========================================
+       ENCABEZADO
+  =========================================== -->
+
+  <div class="page-header">
+
+    <div class="header-left">
+
+      <button
+        type="button"
+        class="btn-regresar"
+        (click)="regresar()"
+      >
+        ← Regresar
+      </button>
+
+      <div>
+        <h1>Nueva compra</h1>
+        <p>Registra una nueva compra de productos</p>
+      </div>
+
+    </div>
+
+    <div class="usuario-info">
+      <span class="usuario-label">Usuario</span>
+      <strong>{{ usuarioNombre || 'Usuario actual' }}</strong>
+    </div>
+
+  </div>
+
+
+  <!-- ==========================================
+       MENSAJES
+  =========================================== -->
+
+  @if (mensaje) {
+
+    <div class="alert alert-success">
+      <span class="alert-icon">✓</span>
+
+      <div>
+        <strong>Compra registrada</strong>
+        <p>{{ mensaje }}</p>
+      </div>
+    </div>
+
+  }
+
+  @if (error) {
+
+    <div class="alert alert-error">
+      <span class="alert-icon">!</span>
+
+      <div>
+        <strong>Ocurrió un problema</strong>
+        <p>{{ error }}</p>
+      </div>
+    </div>
+
+  }
+
+
+  <!-- ==========================================
+       CONTENIDO PRINCIPAL
+  =========================================== -->
+
+  <div class="compra-grid">
+
+
+    <!-- ========================================
+         COLUMNA PRODUCTOS
+    ========================================= -->
+
+    <section class="productos-card">
+
+      <div class="card-header">
+
+        <div>
+          <h2>Productos</h2>
+          <p>Selecciona los productos que deseas comprar</p>
+        </div>
+
+        <span class="productos-count">
+          {{ productosFiltrados.length }} productos
+        </span>
+
+      </div>
+
+
+      <!-- BUSCADOR -->
+
+      <div class="buscador-container">
+
+        <div class="buscador">
+
+          <span class="search-icon">⌕</span>
+
+          <input
+            type="text"
+            [(ngModel)]="buscarProductoTexto"
+            (input)="buscarProductos()"
+            placeholder="Buscar por nombre, código o marca..."
+          >
+
+          @if (buscarProductoTexto) {
+
+            <button
+              type="button"
+              class="btn-limpiar-busqueda"
+              (click)="buscarProductoTexto = ''; buscarProductos()"
+            >
+              ×
+            </button>
+
+          }
+
+        </div>
+
+      </div>
+
+
+      <!-- CARGANDO -->
+
+      @if (cargando) {
+
+        <div class="estado-container">
+
+          <div class="spinner"></div>
+
+          <p>Cargando productos...</p>
+
+        </div>
+
+      }
+
+
+      <!-- ERROR -->
+
+      @if (!cargando && error && productos.length === 0) {
+
+        <div class="estado-container error-state">
+
+          <div class="estado-icon">⚠</div>
+
+          <h3>No se pudieron cargar los productos</h3>
+
+          <p>{{ error }}</p>
+
+          <button
+            type="button"
+            class="btn-reintentar"
+            (click)="cargarProductos()"
+          >
+            Reintentar
+          </button>
+
+        </div>
+
+      }
+
+
+      <!-- SIN PRODUCTOS -->
+
+      @if (
+        !cargando &&
+        !error &&
+        productosFiltrados.length === 0
+      ) {
+
+        <div class="estado-container">
+
+          <div class="estado-icon">🔎</div>
+
+          <h3>No encontramos productos</h3>
+
+          <p>
+            Intenta con otro nombre, código o marca.
+          </p>
+
+        </div>
+
+      }
+
+
+      <!-- LISTA DE PRODUCTOS -->
+
+      @if (
+        !cargando &&
+        productosFiltrados.length > 0
+      ) {
+
+        <div class="productos-lista">
+
+          @for (
+            producto of productosFiltrados;
+            track producto.id
+          ) {
+
+            <div class="producto-item">
+
+              <div class="producto-info">
+
+                <div class="producto-icon">
+                  📦
+                </div>
+
+                <div class="producto-datos">
+
+                  <h3>
+                    {{ producto.nombre }}
+                  </h3>
+
+                  <div class="producto-meta">
+
+                    <span>
+                      Código:
+                      <strong>{{ producto.codigo }}</strong>
+                    </span>
+
+                    @if (producto.marca) {
+
+                      <span>
+                        Marca:
+                        <strong>{{ producto.marca }}</strong>
+                      </span>
+
+                    }
+
+                  </div>
+
+                  <div class="producto-stock">
+
+                    Stock actual:
+                    <strong>{{ producto.stock }}</strong>
+
+                    @if (
+                      producto.stockMinimo &&
+                      producto.stock <= producto.stockMinimo
+                    ) {
+
+                      <span class="stock-bajo">
+                        Stock bajo
+                      </span>
+
+                    }
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <div class="producto-compra">
+
+                <div class="producto-precio">
+
+                  <span>Precio de compra</span>
+
+                  <strong>
+                    {{ formatearDinero(producto.precioCompra) }}
+                  </strong>
+
+                </div>
+
+                <button
+                  type="button"
+                  class="btn-agregar"
+                  (click)="agregarProducto(producto)"
+                  [disabled]="!producto.activo"
+                >
+                  <span>+</span>
+                  Agregar
+                </button>
+
+              </div>
+
+            </div>
+
+          }
+
+        </div>
+
+      }
+
+    </section>
+
+
+    <!-- ========================================
+         COLUMNA CARRITO
+    ========================================= -->
+
+    <aside class="carrito-card">
+
+      <div class="card-header carrito-header">
+
+        <div>
+
+          <h2>Carrito de compra</h2>
+
+          <p>
+            {{ carrito.length }}
+            {{ carrito.length === 1 ? 'producto' : 'productos' }}
+          </p>
+
+        </div>
+
+        @if (carrito.length > 0) {
+
+          <button
+            type="button"
+            class="btn-vaciar"
+            (click)="limpiarCompra()"
+          >
+            Vaciar
+          </button>
+
+        }
+
+      </div>
+
+
+      <!-- CARRITO VACÍO -->
+
+      @if (carrito.length === 0) {
+
+        <div class="carrito-vacio">
+
+          <div class="carrito-icon">
+            🛒
+          </div>
+
+          <h3>Tu carrito está vacío</h3>
+
+          <p>
+            Agrega productos desde la lista
+            para comenzar la compra.
+          </p>
+
+        </div>
+
+      }
+
+
+      <!-- ITEMS DEL CARRITO -->
+
+      @if (carrito.length > 0) {
+
+        <div class="carrito-items">
+
+          @for (
+            item of carrito;
+            track item.producto.id
+          ) {
+
+            <div class="carrito-item">
+
+              <div class="item-info">
+
+                <div class="item-icon">
+                  📦
+                </div>
+
+                <div class="item-datos">
+
+                  <strong>
+                    {{ item.producto.nombre }}
+                  </strong>
+
+                  <span>
+                    {{ formatearDinero(item.producto.precioCompra) }}
+                    por unidad
+                  </span>
+
+                </div>
+
+              </div>
+
+
+              <div class="item-controles">
+
+                <div class="cantidad-control">
+
+                  <button
+                    type="button"
+                    (click)="disminuirCantidad(item)"
+                  >
+                    −
+                  </button>
+
+                  <input
+                    type="number"
+                    min="1"
+                    [(ngModel)]="item.cantidad"
+                    (change)="cambiarCantidad(item)"
+                  >
+
+                  <button
+                    type="button"
+                    (click)="aumentarCantidad(item)"
+                  >
+                    +
+                  </button>
+
+                </div>
+
+                <button
+                  type="button"
+                  class="btn-eliminar-item"
+                  title="Eliminar producto"
+                  (click)="eliminarDelCarrito(item)"
+                >
+                  🗑
+                </button>
+
+              </div>
+
+
+              <div class="item-subtotal">
+
+                <span>Subtotal</span>
+
+                <strong>
+                  {{ formatearDinero(item.subtotal) }}
+                </strong>
+
+              </div>
+
+            </div>
+
+          }
+
+        </div>
+
+      }
+
+
+      <!-- ======================================
+           RESUMEN
+      ======================================= -->
+
+      <div class="resumen-compra">
+
+        <div class="resumen-linea">
+
+          <span>Subtotal</span>
+
+          <strong>
+            {{ formatearDinero(obtenerSubtotal()) }}
+          </strong>
+
+        </div>
+
+
+        <div class="resumen-linea">
+
+          <span>
+            IVA
+            <small>(16%)</small>
+          </span>
+
+          <strong>
+            {{ formatearDinero(obtenerImpuesto()) }}
+          </strong>
+
+        </div>
+
+
+        <div class="resumen-separador"></div>
+
+
+        <div class="resumen-total">
+
+          <span>Total</span>
+
+          <strong>
+            {{ formatearDinero(obtenerTotal()) }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <!-- ======================================
+           BOTONES
+      ======================================= -->
+
+      <div class="acciones-compra">
+
+        <button
+          type="button"
+          class="btn-cancelar"
+          (click)="regresar()"
+          [disabled]="guardando"
+        >
+          Cancelar
+        </button>
+
+
+        <button
+          type="button"
+          class="btn-finalizar"
+          (click)="finalizarCompra()"
+          [disabled]="carrito.length === 0 || guardando"
+        >
+
+          @if (guardando) {
+
+            <span class="spinner-small"></span>
+
+            Registrando...
+
+          } @else {
+
+            <span>✓</span>
+
+            Finalizar compra
+
+          }
+
+        </button>
+
+      </div>
+
+    </aside>
+
+  </div>
+
+</div>

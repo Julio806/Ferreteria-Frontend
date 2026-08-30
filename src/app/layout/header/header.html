@@ -1,0 +1,82 @@
+<header class="header">
+
+  <!-- IZQUIERDA -->
+
+  <div class="header-left">
+
+    <button
+      class="menu-button"
+      type="button"
+      aria-label="Menú"
+    >
+      ☰
+    </button>
+
+    <div class="page-info">
+
+      <h1>Dashboard</h1>
+
+      <span>
+        Sistema de gestión de ferretería
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <!-- DERECHA -->
+
+  <div class="header-right">
+
+    <!-- NOTIFICACIONES -->
+
+    <button
+      class="notification-button"
+      type="button"
+      aria-label="Notificaciones"
+    >
+      🔔
+
+      <span class="notification-dot"></span>
+
+    </button>
+
+
+    <!-- USUARIO -->
+
+    <div class="header-user">
+
+      <div class="header-avatar">
+        👤
+      </div>
+
+      <div class="header-user-info">
+
+        <strong>
+          {{ username }}
+        </strong>
+
+        <span>
+          {{ rol }}
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <!-- LOGOUT -->
+
+    <button
+      class="header-logout"
+      type="button"
+      (click)="logout()"
+      title="Cerrar sesión"
+    >
+      🚪
+    </button>
+
+  </div>
+
+</header>

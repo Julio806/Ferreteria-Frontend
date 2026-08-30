@@ -1,0 +1,647 @@
+<div class="ventas-page">
+
+  <!-- ==========================================
+       ENCABEZADO
+       ========================================== -->
+
+<div class="page-header">
+    <div>
+        <h1>Ventas</h1>
+        <p>Consulta y administra las ventas realizadas.</p>
+    </div>
+
+    <button
+        class="btn-nueva-venta"
+        (click)="nuevaVenta()">
+        <span>＋</span>
+        Nueva venta
+    </button>
+</div>
+
+
+  <!-- ==========================================
+       BARRA DE HERRAMIENTAS
+       ========================================== -->
+
+  <div class="toolbar">
+
+    <div class="search-box">
+
+      <span class="search-icon">
+        🔎
+      </span>
+
+      <input
+        type="text"
+        placeholder="Buscar venta..."
+        [(ngModel)]="busqueda"
+        (input)="buscar()"
+      />
+
+    </div>
+
+
+    <button
+      type="button"
+      class="btn-recargar"
+      (click)="cargarVentas()"
+    >
+      🔄 Recargar
+    </button>
+
+  </div>
+
+
+  <!-- ==========================================
+       MENSAJE DE CARGANDO
+       ========================================== -->
+
+  @if (cargando) {
+
+    <div class="estado-mensaje">
+
+      <div class="spinner"></div>
+
+      <p>
+        Cargando ventas...
+      </p>
+
+    </div>
+
+  }
+
+
+  <!-- ==========================================
+       MENSAJE DE ERROR
+       ========================================== -->
+
+  @if (!cargando && error) {
+
+    <div class="mensaje-error">
+
+      <span>
+        ⚠️
+      </span>
+
+      {{ error }}
+
+    </div>
+
+  }
+
+
+  <!-- ==========================================
+       TABLA DE VENTAS
+       ========================================== -->
+
+  @if (!cargando && !error) {
+
+    <div class="tabla-container">
+
+      <table class="ventas-table">
+
+        <thead>
+
+          <tr>
+
+            <th>
+              Folio
+            </th>
+
+            <th>
+              Fecha
+            </th>
+
+            <th>
+              Vendedor
+            </th>
+
+            <th>
+              Método de pago
+            </th>
+
+            <th>
+              Total
+            </th>
+
+            <th>
+              Estado
+            </th>
+
+            <th class="col-acciones">
+              Acciones
+            </th>
+
+          </tr>
+
+        </thead>
+
+
+        <tbody>
+
+          @for (
+            venta of ventasFiltradas;
+            track venta.id
+          ) {
+
+            <tr>
+
+              <!-- FOLIO -->
+
+              <td>
+
+                <span class="folio">
+                  {{ venta.folio }}
+                </span>
+
+              </td>
+
+
+              <!-- FECHA -->
+
+              <td>
+
+                <div class="fecha">
+
+                  <strong>
+                    {{ formatearFecha(venta.fechaCreacion) }}
+                  </strong>
+
+                  <small>
+                    {{ formatearHora(venta.fechaCreacion) }}
+                  </small>
+
+                </div>
+
+              </td>
+
+
+              <!-- VENDEDOR -->
+
+              <td>
+
+                <div class="vendedor">
+
+                  <div class="avatar">
+                    {{ venta.usuarioNombre.charAt(0).toUpperCase() }}
+                  </div>
+
+                  <div>
+
+                    <strong>
+                      {{ venta.usuarioNombre }}
+                    </strong>
+
+                    <small>
+                      @{{ venta.username }}
+                    </small>
+
+                  </div>
+
+                </div>
+
+              </td>
+
+
+              <!-- MÉTODO DE PAGO -->
+
+              <td>
+
+                <span class="metodo-pago">
+
+                  {{ obtenerMetodoPago(venta.metodoPago) }}
+
+                </span>
+
+              </td>
+
+
+              <!-- TOTAL -->
+
+              <td>
+
+                <strong class="total">
+
+                  {{ formatearDinero(venta.total) }}
+
+                </strong>
+
+              </td>
+
+
+              <!-- ESTADO -->
+
+              <td>
+
+                @if (venta.estado === 'COMPLETADA') {
+
+                  <span class="badge completada">
+                    ● Completada
+                  </span>
+
+                } @else if (venta.estado === 'CANCELADA') {
+
+                  <span class="badge cancelada">
+                    ● Cancelada
+                  </span>
+
+                } @else {
+
+                  <span class="badge pendiente">
+                    ● {{ obtenerEstado(venta.estado) }}
+                  </span>
+
+                }
+
+              </td>
+
+
+              <!-- ACCIONES -->
+
+              <td class="acciones">
+
+                <!-- VER -->
+
+                <button
+                  type="button"
+                  class="btn-ver"
+                  title="Ver venta"
+                  (click)="verVenta(venta)"
+                >
+                  👁️
+                </button>
+
+
+                <!-- CANCELAR -->
+
+                @if (venta.estado !== 'CANCELADA') {
+
+                  <button
+                    type="button"
+                    class="btn-cancelar"
+                    title="Cancelar venta"
+                    (click)="cancelarVenta(venta)"
+                  >
+                    ✕
+                  </button>
+
+                }
+
+              </td>
+
+            </tr>
+
+          }
+
+
+          <!-- ==========================================
+               SIN RESULTADOS
+               ========================================== -->
+
+          @if (ventasFiltradas.length === 0) {
+
+            <tr>
+
+              <td
+                colspan="7"
+                class="sin-resultados"
+              >
+
+                <div>
+
+                  <span class="sin-resultados-icon">
+                    🔍
+                  </span>
+
+                  <strong>
+                    No se encontraron ventas
+                  </strong>
+
+                  <p>
+                    Intenta con otro término de búsqueda.
+                  </p>
+
+                </div>
+
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  }
+
+
+  <!-- ==========================================
+       MODAL DETALLE DE VENTA
+       ========================================== -->
+
+  @if (mostrarDetalle && ventaSeleccionada) {
+
+    <div
+      class="modal-overlay"
+      (click)="cerrarDetalle()"
+    >
+
+      <div
+        class="modal-venta"
+        (click)="$event.stopPropagation()"
+      >
+
+
+        <!-- ======================================
+             HEADER DEL MODAL
+             ====================================== -->
+
+        <div class="modal-header">
+
+          <div>
+
+            <span class="modal-subtitle">
+              Detalle de venta
+            </span>
+
+            <h2>
+              {{ ventaSeleccionada.folio }}
+            </h2>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="btn-cerrar"
+            title="Cerrar"
+            (click)="cerrarDetalle()"
+          >
+            ✕
+          </button>
+
+        </div>
+
+
+        <!-- ======================================
+             INFORMACIÓN GENERAL
+             ====================================== -->
+
+        <div class="venta-info">
+
+
+          <div class="info-item">
+
+            <span>
+              Fecha
+            </span>
+
+            <strong>
+              {{ formatearFecha(ventaSeleccionada.fechaCreacion) }}
+              {{ formatearHora(ventaSeleccionada.fechaCreacion) }}
+            </strong>
+
+          </div>
+
+
+          <div class="info-item">
+
+            <span>
+              Vendedor
+            </span>
+
+            <strong>
+              {{ ventaSeleccionada.usuarioNombre }}
+            </strong>
+
+          </div>
+
+
+          <div class="info-item">
+
+            <span>
+              Usuario
+            </span>
+
+            <strong>
+              @{{ ventaSeleccionada.username }}
+            </strong>
+
+          </div>
+
+
+          <div class="info-item">
+
+            <span>
+              Método de pago
+            </span>
+
+            <strong>
+              {{ obtenerMetodoPago(ventaSeleccionada.metodoPago) }}
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <!-- ======================================
+             PRODUCTOS
+             ====================================== -->
+
+        <div class="detalle-productos">
+
+          <h3>
+            Productos
+          </h3>
+
+
+          <div class="detalle-tabla-wrapper">
+
+            <table class="detalle-tabla">
+
+              <thead>
+
+                <tr>
+
+                  <th>
+                    Producto
+                  </th>
+
+                  <th>
+                    Cantidad
+                  </th>
+
+                  <th>
+                    Precio
+                  </th>
+
+                  <th>
+                    Subtotal
+                  </th>
+
+                </tr>
+
+              </thead>
+
+
+              <tbody>
+
+                @for (
+                  item of ventaSeleccionada.items;
+                  track item.id
+                ) {
+
+                  <tr>
+
+                    <td>
+
+                      <strong>
+                        {{ item.productoNombre }}
+                      </strong>
+
+                    </td>
+
+
+                    <td>
+
+                      {{ item.cantidad }}
+
+                    </td>
+
+
+                    <td>
+
+                      {{ formatearDinero(item.precioUnitario) }}
+
+                    </td>
+
+
+                    <td>
+
+                      <strong>
+                        {{ formatearDinero(item.subtotal) }}
+                      </strong>
+
+                    </td>
+
+                  </tr>
+
+                }
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        </div>
+
+
+        <!-- ======================================
+             TOTALES
+             ====================================== -->
+
+        <div class="totales">
+
+
+          <div>
+
+            <span>
+              Subtotal
+            </span>
+
+            <strong>
+              {{ formatearDinero(ventaSeleccionada.subtotal) }}
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              Impuesto
+            </span>
+
+            <strong>
+              {{ formatearDinero(ventaSeleccionada.impuesto) }}
+            </strong>
+
+          </div>
+
+
+          <div class="total-final">
+
+            <span>
+              Total
+            </span>
+
+            <strong>
+              {{ formatearDinero(ventaSeleccionada.total) }}
+            </strong>
+
+          </div>
+
+
+        </div>
+
+
+        <!-- ======================================
+             FOOTER
+             ====================================== -->
+
+        <div class="modal-footer">
+
+
+          <div>
+
+            @if (
+              ventaSeleccionada.estado === 'COMPLETADA'
+            ) {
+
+              <span class="badge completada">
+                ● Venta completada
+              </span>
+
+            } @else if (
+              ventaSeleccionada.estado === 'CANCELADA'
+            ) {
+
+              <span class="badge cancelada">
+                ● Venta cancelada
+              </span>
+
+            } @else {
+
+              <span class="badge pendiente">
+                ● {{ obtenerEstado(ventaSeleccionada.estado) }}
+              </span>
+
+            }
+
+          </div>
+
+
+          <button
+            type="button"
+            class="btn-secondary"
+            (click)="cerrarDetalle()"
+          >
+            Cerrar
+          </button>
+
+
+        </div>
+
+
+      </div>
+
+    </div>
+
+  }
+
+</div>

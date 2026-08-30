@@ -1,0 +1,765 @@
+<div class="compras-page">
+
+  <!-- ======================================
+       ENCABEZADO
+       ====================================== -->
+
+  <div class="page-header">
+
+    <div>
+
+      <h1>
+        Compras
+      </h1>
+
+      <p>
+        Gestiona y consulta las compras realizadas
+      </p>
+
+    </div>
+
+    <button
+      class="btn-primary"
+      type="button"
+      (click)="nuevaCompra()"
+    >
+
+      <span class="icon">
+        +
+      </span>
+
+      Nueva compra
+
+    </button>
+
+  </div>
+
+
+  <!-- ======================================
+       TARJETAS RESUMEN
+       ====================================== -->
+
+  <div class="stats-grid">
+
+    <!-- TOTAL -->
+
+    <div class="stat-card">
+
+      <div class="stat-icon">
+        🛒
+      </div>
+
+      <div>
+
+        <span class="stat-label">
+          Total de compras
+        </span>
+
+        <strong>
+          {{ obtenerTotalCompras() }}
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    <!-- COMPLETADAS -->
+
+    <div class="stat-card">
+
+      <div class="stat-icon success">
+        ✓
+      </div>
+
+      <div>
+
+        <span class="stat-label">
+          Completadas
+        </span>
+
+        <strong>
+          {{ obtenerComprasCompletadas() }}
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    <!-- CANCELADAS -->
+
+    <div class="stat-card">
+
+      <div class="stat-icon danger">
+        ×
+      </div>
+
+      <div>
+
+        <span class="stat-label">
+          Canceladas
+        </span>
+
+        <strong>
+          {{ obtenerComprasCanceladas() }}
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    <!-- TOTAL GASTADO -->
+
+    <div class="stat-card">
+
+      <div class="stat-icon money">
+        $
+      </div>
+
+      <div>
+
+        <span class="stat-label">
+          Total comprado
+        </span>
+
+        <strong>
+          {{ formatearDinero(obtenerTotalGastado()) }}
+        </strong>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ======================================
+       CONTENEDOR PRINCIPAL
+       ====================================== -->
+
+  <div class="content-card">
+
+
+    <!-- ====================================
+         BARRA DE HERRAMIENTAS
+         ==================================== -->
+
+    <div class="toolbar">
+
+      <!-- BUSCADOR -->
+
+      <div class="search-box">
+
+        <span class="search-icon">
+          🔎
+        </span>
+
+        <input
+          type="text"
+          placeholder="Buscar por folio o usuario..."
+          [(ngModel)]="terminoBusqueda"
+          (input)="buscarCompra()"
+        >
+
+      </div>
+
+
+      <!-- FILTRO -->
+
+      <select
+        class="filter-select"
+        [(ngModel)]="filtroEstado"
+        (change)="cambiarFiltroEstado(filtroEstado)"
+      >
+
+        <option value="TODOS">
+          Todas
+        </option>
+
+        <option value="COMPLETADA">
+          Completadas
+        </option>
+
+        <option value="CANCELADA">
+          Canceladas
+        </option>
+
+      </select>
+
+
+      <!-- RECARGAR -->
+
+      <button
+        class="btn-refresh"
+        type="button"
+        (click)="cargarCompras()"
+        title="Actualizar"
+      >
+
+        ↻
+
+      </button>
+
+    </div>
+
+
+    <!-- ====================================
+         CARGANDO
+         ==================================== -->
+
+    @if (cargando) {
+
+      <div class="state-container">
+
+        <div class="spinner"></div>
+
+        <p>
+          Cargando compras...
+        </p>
+
+      </div>
+
+    }
+
+
+    <!-- ====================================
+         ERROR
+         ==================================== -->
+
+    @if (!cargando && error) {
+
+      <div class="state-container error-state">
+
+        <div class="state-icon">
+          ⚠️
+        </div>
+
+        <p>
+          {{ error }}
+        </p>
+
+        <button
+          class="btn-primary"
+          type="button"
+          (click)="cargarCompras()"
+        >
+          Reintentar
+        </button>
+
+      </div>
+
+    }
+
+
+    <!-- ====================================
+         TABLA
+         ==================================== -->
+
+    @if (!cargando && !error) {
+
+      @if (comprasFiltradas.length > 0) {
+
+        <div class="table-wrapper">
+
+          <table>
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Folio
+                </th>
+
+                <th>
+                  Usuario
+                </th>
+
+                <th>
+                  Productos
+                </th>
+
+                <th>
+                  Fecha
+                </th>
+
+                <th>
+                  Total
+                </th>
+
+                <th>
+                  Estado
+                </th>
+
+                <th>
+                  Acciones
+                </th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody>
+
+              @for (
+                compra of comprasFiltradas;
+                track compra.id
+              ) {
+
+                <tr>
+
+                  <!-- FOLIO -->
+
+                  <td>
+
+                    <span class="folio">
+                      {{ compra.folio }}
+                    </span>
+
+                  </td>
+
+
+                  <!-- USUARIO -->
+
+                  <td>
+
+                    <div class="user-info">
+
+                      <div class="user-avatar">
+                        {{ compra.usuarioNombre.charAt(0) || '?' }}
+                      </div>
+
+                      <div>
+
+                        <strong>
+                          {{ compra.usuarioNombre }}
+                        </strong>
+
+                        <small>
+                          @{{ compra.username }}
+                        </small>
+
+                      </div>
+
+                    </div>
+
+                  </td>
+
+
+                  <!-- PRODUCTOS -->
+
+                  <td>
+
+                    <span class="products-count">
+
+                      {{ compra.items.length }}
+
+                      {{
+                        compra.items.length === 1
+                          ? 'producto'
+                          : 'productos'
+                      }}
+
+                    </span>
+
+                  </td>
+
+
+                  <!-- FECHA -->
+
+                  <td>
+
+                    <span class="date">
+                      {{ formatearFecha(compra.fechaCreacion) }}
+                    </span>
+
+                  </td>
+
+
+                  <!-- TOTAL -->
+
+                  <td>
+
+                    <strong class="total">
+                      {{ formatearDinero(compra.total) }}
+                    </strong>
+
+                  </td>
+
+
+                  <!-- ESTADO -->
+
+                  <td>
+
+                    @if (compra.estado === 'COMPLETADA') {
+
+                      <span class="status completed">
+                        ✓ Completada
+                      </span>
+
+                    } @else {
+
+                      <span class="status cancelled">
+                        × Cancelada
+                      </span>
+
+                    }
+
+                  </td>
+
+
+                  <!-- ACCIONES -->
+
+                  <td>
+
+                    <div class="actions">
+
+                      <button
+                        class="action-btn view"
+                        type="button"
+                        title="Ver compra"
+                        (click)="verCompra(compra)"
+                      >
+                        👁
+                      </button>
+
+                      @if (compra.estado === 'COMPLETADA') {
+
+                        <button
+                          class="action-btn cancel"
+                          type="button"
+                          title="Cancelar compra"
+                          (click)="cancelarCompra(compra)"
+                        >
+                          ×
+                        </button>
+
+                      }
+
+                    </div>
+
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      } @else {
+
+        <!-- ==================================
+             SIN RESULTADOS
+             ================================== -->
+
+        <div class="empty-state">
+
+          <div class="empty-icon">
+            🛒
+          </div>
+
+          <h3>
+            No hay compras
+          </h3>
+
+          <p>
+            No encontramos compras con los filtros actuales.
+          </p>
+
+          @if (terminoBusqueda || filtroEstado !== 'TODOS') {
+
+            <button
+              class="btn-secondary"
+              type="button"
+              (click)="terminoBusqueda = ''; filtroEstado = 'TODOS'; aplicarFiltros()"
+            >
+              Limpiar filtros
+            </button>
+
+          } @else {
+
+            <button
+              class="btn-primary"
+              type="button"
+              (click)="nuevaCompra()"
+            >
+              Registrar primera compra
+            </button>
+
+          }
+
+        </div>
+
+      }
+
+    }
+
+  </div>
+
+</div>
+
+
+<!-- ======================================
+     MODAL DETALLE DE COMPRA
+     ====================================== -->
+
+@if (mostrarDetalle && compraSeleccionada) {
+
+  <div
+    class="modal-backdrop"
+    (click)="cerrarDetalle()"
+  >
+
+    <div
+      class="modal"
+      (click)="$event.stopPropagation()"
+    >
+
+
+      <!-- MODAL HEADER -->
+
+      <div class="modal-header">
+
+        <div>
+
+          <span class="modal-label">
+            DETALLE DE COMPRA
+          </span>
+
+          <h2>
+            {{ compraSeleccionada.folio }}
+          </h2>
+
+        </div>
+
+        <button
+          class="close-btn"
+          type="button"
+          (click)="cerrarDetalle()"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <!-- INFORMACIÓN -->
+
+      <div class="modal-info-grid">
+
+        <div>
+
+          <span>
+            Usuario
+          </span>
+
+          <strong>
+            {{ compraSeleccionada.usuarioNombre }}
+          </strong>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            Fecha
+          </span>
+
+          <strong>
+            {{ formatearFecha(compraSeleccionada.fechaCreacion) }}
+          </strong>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            Estado
+          </span>
+
+          @if (
+            compraSeleccionada.estado === 'COMPLETADA'
+          ) {
+
+            <strong class="text-success">
+              ✓ Completada
+            </strong>
+
+          } @else {
+
+            <strong class="text-danger">
+              × Cancelada
+            </strong>
+
+          }
+
+        </div>
+
+      </div>
+
+
+      <!-- PRODUCTOS -->
+
+      <div class="detail-section">
+
+        <h3>
+          Productos
+        </h3>
+
+
+        <div class="detail-table-wrapper">
+
+          <table class="detail-table">
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Producto
+                </th>
+
+                <th>
+                  Cantidad
+                </th>
+
+                <th>
+                  Precio
+                </th>
+
+                <th>
+                  Subtotal
+                </th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody>
+
+              @for (
+                item of compraSeleccionada.items;
+                track item.id
+              ) {
+
+                <tr>
+
+                  <td>
+                    {{ item.productoNombre }}
+                  </td>
+
+                  <td>
+                    {{ item.cantidad }}
+                  </td>
+
+                  <td>
+                    {{ formatearDinero(item.precioUnitario) }}
+                  </td>
+
+                  <td>
+                    <strong>
+                      {{ formatearDinero(item.subtotal) }}
+                    </strong>
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+
+      <!-- TOTALES -->
+
+      <div class="totals">
+
+        <div>
+
+          <span>
+            Subtotal
+          </span>
+
+          <strong>
+            {{ formatearDinero(compraSeleccionada.subtotal) }}
+          </strong>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            Impuesto
+          </span>
+
+          <strong>
+            {{ formatearDinero(compraSeleccionada.impuesto) }}
+          </strong>
+
+        </div>
+
+
+        <div class="grand-total">
+
+          <span>
+            Total
+          </span>
+
+          <strong>
+            {{ formatearDinero(compraSeleccionada.total) }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <!-- MODAL FOOTER -->
+
+      <div class="modal-footer">
+
+        @if (
+          compraSeleccionada.estado === 'COMPLETADA'
+        ) {
+
+          <button
+            class="btn-danger"
+            type="button"
+            (click)="cancelarCompra(compraSeleccionada)"
+          >
+            Cancelar compra
+          </button>
+
+        }
+
+        <button
+          class="btn-secondary"
+          type="button"
+          (click)="cerrarDetalle()"
+        >
+          Cerrar
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+}

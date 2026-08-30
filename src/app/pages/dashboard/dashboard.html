@@ -1,0 +1,707 @@
+<div class="dashboard">
+
+  <!-- ==========================================
+       ENCABEZADO
+       ========================================== -->
+
+  <div class="dashboard-header">
+
+    <div class="header-info">
+
+      <span class="section-label">
+        FERRE CENTRO
+      </span>
+
+      <h1>
+        Dashboard
+      </h1>
+
+      <p>
+        Resumen general de la ferretería
+      </p>
+
+    </div>
+
+    <button
+      type="button"
+      class="refresh-button"
+      (click)="obtenerDashboard()"
+      [disabled]="cargando"
+    >
+
+      <!-- ICONO ACTUALIZAR -->
+
+      <svg
+        class="refresh-icon"
+        [class.spinning]="cargando"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+
+        <path d="M20 11a8.1 8.1 0 0 0-15.5-2M4 5v4h4"></path>
+
+        <path d="M4 13a8.1 8.1 0 0 0 15.5 2M20 19v-4h-4"></path>
+
+      </svg>
+
+      {{ cargando ? 'Actualizando...' : 'Actualizar' }}
+
+    </button>
+
+  </div>
+
+
+  <!-- ==========================================
+       CARGANDO
+       ========================================== -->
+
+  @if (cargando) {
+
+    <div class="state-card">
+
+      <div class="loading-spinner"></div>
+
+      <h3>
+        Cargando información
+      </h3>
+
+      <p>
+        Estamos obteniendo los datos del sistema...
+      </p>
+
+    </div>
+
+  }
+
+
+  <!-- ==========================================
+       ERROR
+       ========================================== -->
+
+  @if (error) {
+
+    <div class="state-card error-card">
+
+      <div class="state-icon error-icon">
+
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+
+          <path
+            d="M10.3 2.9 1.8 17a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 2.9a2 2 0 0 0-3.4 0Z"
+          ></path>
+
+          <line
+            x1="12"
+            y1="9"
+            x2="12"
+            y2="13"
+          ></line>
+
+          <line
+            x1="12"
+            y1="17"
+            x2="12.01"
+            y2="17"
+          ></line>
+
+        </svg>
+
+      </div>
+
+      <h3>
+        No se pudo cargar el dashboard
+      </h3>
+
+      <p>
+        Ocurrió un problema al obtener la información.
+      </p>
+
+      <button
+        type="button"
+        class="retry-button"
+        (click)="obtenerDashboard()"
+      >
+        Intentar nuevamente
+      </button>
+
+    </div>
+
+  }
+
+
+  <!-- ==========================================
+       DASHBOARD
+       ========================================== -->
+
+  @if (!cargando && !error && dashboard) {
+
+    <!-- ========================================
+         TARJETAS PRINCIPALES
+         ======================================== -->
+
+    <div class="stats-grid">
+
+
+      <!-- ======================================
+           VENTAS DEL DÍA
+           ====================================== -->
+
+      <div class="stat-card sales-card">
+
+        <div class="stat-icon">
+
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+
+            <line
+              x1="12"
+              y1="1"
+              x2="12"
+              y2="23"
+            ></line>
+
+            <path
+              d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H7"
+            ></path>
+
+          </svg>
+
+        </div>
+
+        <div class="stat-info">
+
+          <span>
+            Ventas del día
+          </span>
+
+          <strong>
+            {{ dashboard.ventasDelDia | currency:'MXN':'symbol':'1.2-2' }}
+          </strong>
+
+          <small>
+            Ingresos registrados hoy
+          </small>
+
+        </div>
+
+      </div>
+
+
+      <!-- ======================================
+           PRODUCTOS
+           ====================================== -->
+
+      <div class="stat-card products-card">
+
+        <div class="stat-icon">
+
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+
+            <path d="m21 16-9 5-9-5"></path>
+
+            <path d="m3 8 9 5 9-5"></path>
+
+            <path d="m3 8 9-5 9 5"></path>
+
+            <path d="M12 13v8"></path>
+
+          </svg>
+
+        </div>
+
+        <div class="stat-info">
+
+          <span>
+            Total productos
+          </span>
+
+          <strong>
+            {{ dashboard.totalProductos }}
+          </strong>
+
+          <small>
+            Productos registrados
+          </small>
+
+        </div>
+
+      </div>
+
+
+      <!-- ======================================
+           COMPRAS
+           ====================================== -->
+
+      <div class="stat-card purchases-card">
+
+        <div class="stat-icon">
+
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+
+            <circle
+              cx="9"
+              cy="20"
+              r="1"
+            ></circle>
+
+            <circle
+              cx="19"
+              cy="20"
+              r="1"
+            ></circle>
+
+            <path
+              d="M3 4h2l2.4 11.3a2 2 0 0 0 2 1.7h7.8a2 2 0 0 0 2-1.6L21 8H6"
+            ></path>
+
+          </svg>
+
+        </div>
+
+        <div class="stat-info">
+
+          <span>
+            Compras del día
+          </span>
+
+          <strong>
+            {{ dashboard.comprasDelDia | currency:'MXN':'symbol':'1.2-2' }}
+          </strong>
+
+          <small>
+            Inversión registrada hoy
+          </small>
+
+        </div>
+
+      </div>
+
+
+      <!-- ======================================
+           STOCK BAJO
+           ====================================== -->
+
+      <div class="stat-card stock-card">
+
+        <div class="stat-icon">
+
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+
+            <path
+              d="M10.3 2.9 1.8 17a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 2.9a2 2 0 0 0-3.4 0Z"
+            ></path>
+
+            <line
+              x1="12"
+              y1="9"
+              x2="12"
+              y2="13"
+            ></line>
+
+            <line
+              x1="12"
+              y1="17"
+              x2="12.01"
+              y2="17"
+            ></line>
+
+          </svg>
+
+        </div>
+
+        <div class="stat-info">
+
+          <span>
+            Stock bajo
+          </span>
+
+          <strong>
+            {{ dashboard.productosStockBajo }}
+          </strong>
+
+          <small>
+            Requieren atención
+          </small>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ========================================
+         PANELES INFERIORES
+         ======================================== -->
+
+    <div class="dashboard-grid">
+
+
+      <!-- ======================================
+           RESUMEN DE VENTAS
+           ====================================== -->
+
+      <section class="dashboard-card">
+
+        <div class="card-header">
+
+          <div class="card-title">
+
+            <div class="card-icon sales-icon">
+
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+
+                <line
+                  x1="12"
+                  y1="1"
+                  x2="12"
+                  y2="23"
+                ></line>
+
+                <path
+                  d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H7"
+                ></path>
+
+              </svg>
+
+            </div>
+
+            <div>
+
+              <h2>
+                Resumen de ventas
+              </h2>
+
+              <span>
+                Información general de ventas
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <a
+            routerLink="/ventas"
+            class="card-link"
+          >
+
+            Ver ventas
+
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+
+              <line
+                x1="5"
+                y1="12"
+                x2="19"
+                y2="12"
+              ></line>
+
+              <polyline
+                points="12 5 19 12 12 19"
+              ></polyline>
+
+            </svg>
+
+          </a>
+
+        </div>
+
+
+        <div class="summary-content">
+
+
+          <!-- TOTAL VENTAS -->
+
+          <div class="summary-item">
+
+            <div>
+
+              <strong class="summary-title">
+                Total de ventas
+              </strong>
+
+              <span>
+                Ventas registradas
+              </span>
+
+            </div>
+
+            <strong class="summary-value">
+              {{ dashboard.totalVentas }}
+            </strong>
+
+          </div>
+
+
+          <!-- VENTAS DEL DÍA -->
+
+          <div class="summary-item">
+
+            <div>
+
+              <strong class="summary-title">
+                Ventas del día
+              </strong>
+
+              <span>
+                Ingresos de hoy
+              </span>
+
+            </div>
+
+            <strong class="summary-value money">
+              {{ dashboard.ventasDelDia | currency:'MXN':'symbol':'1.2-2' }}
+            </strong>
+
+          </div>
+
+
+          <!-- VENDEDOR -->
+
+          @if (dashboard.rol === 'VENDEDOR') {
+
+            <div class="summary-item">
+
+              <div>
+
+                <strong class="summary-title">
+                  Total vendido por ti
+                </strong>
+
+                <span>
+                  Ventas realizadas durante el día
+                </span>
+
+              </div>
+
+              <strong class="summary-value money">
+                {{ dashboard.totalVendidoDelDia | currency:'MXN':'symbol':'1.2-2' }}
+              </strong>
+
+            </div>
+
+          }
+
+        </div>
+
+      </section>
+
+
+      <!-- ======================================
+           INVENTARIO
+           ====================================== -->
+
+      <section class="dashboard-card">
+
+        <div class="card-header">
+
+          <div class="card-title">
+
+            <div class="card-icon products-icon">
+
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+
+                <path d="m21 16-9 5-9-5"></path>
+
+                <path d="m3 8 9 5 9-5"></path>
+
+                <path d="m3 8 9-5 9 5"></path>
+
+              </svg>
+
+            </div>
+
+            <div>
+
+              <h2>
+                Inventario
+              </h2>
+
+              <span>
+                Estado actual del inventario
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <a
+            routerLink="/productos"
+            class="card-link"
+          >
+
+            Ver productos
+
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+
+              <line
+                x1="5"
+                y1="12"
+                x2="19"
+                y2="12"
+              ></line>
+
+              <polyline
+                points="12 5 19 12 12 19"
+              ></polyline>
+
+            </svg>
+
+          </a>
+
+        </div>
+
+
+        <div class="summary-content">
+
+
+          <!-- TOTAL PRODUCTOS -->
+
+          <div class="summary-item">
+
+            <div>
+
+              <strong class="summary-title">
+                Total de productos
+              </strong>
+
+              <span>
+                Productos registrados
+              </span>
+
+            </div>
+
+            <strong class="summary-value">
+              {{ dashboard.totalProductos }}
+            </strong>
+
+          </div>
+
+
+          <!-- STOCK BAJO -->
+
+          <div
+            class="low-stock-box"
+            [class.no-stock-warning]="dashboard.productosStockBajo === 0"
+          >
+
+            <div class="low-stock-icon">
+
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+
+                <path
+                  d="M10.3 2.9 1.8 17a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 2.9a2 2 0 0 0-3.4 0Z"
+                ></path>
+
+                <line
+                  x1="12"
+                  y1="9"
+                  x2="12"
+                  y2="13"
+                ></line>
+
+                <line
+                  x1="12"
+                  y1="17"
+                  x2="12.01"
+                  y2="17"
+                ></line>
+
+              </svg>
+
+            </div>
+
+            <div>
+
+              <strong>
+                {{ dashboard.productosStockBajo }}
+              </strong>
+
+              <span>
+                productos con stock bajo
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  }
+
+</div>

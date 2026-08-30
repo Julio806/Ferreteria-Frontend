@@ -1,0 +1,1013 @@
+/* =========================================================
+   ROLES - FERRE CENTRO
+   ========================================================= */
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+
+/* =========================================================
+   CONTENEDOR
+   ========================================================= */
+
+.roles {
+  width: 100%;
+  max-width: 1400px;
+
+  margin: 0 auto;
+
+  padding: 36px 40px 50px;
+
+  box-sizing: border-box;
+
+  color: #f1f5f9;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.roles-header {
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content: space-between;
+
+  gap: 20px;
+
+  margin-bottom: 30px;
+}
+
+.roles-header h1 {
+  margin: 5px 0 0;
+
+  color: #f8fafc;
+
+  font-size: 28px;
+
+  font-weight: 700;
+
+  line-height: 1.2;
+}
+
+.roles-header p {
+  margin: 8px 0 0;
+
+  color: #64748b;
+
+  font-size: 13px;
+}
+
+.section-label {
+  display: block;
+
+  color: #ff8c00;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.12em;
+}
+
+
+/* =========================================================
+   BOTÓN PRINCIPAL
+   ========================================================= */
+
+.btn-primary {
+  min-height: 40px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 8px;
+
+  padding: 0 16px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  background: #ff8c00;
+
+  color: #ffffff;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.btn-primary svg {
+  width: 16px;
+  height: 16px;
+}
+
+.btn-primary:hover {
+  background: #ff9d26;
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 6px 18px rgba(255, 140, 0, 0.18);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
+
+  transform: none;
+
+  box-shadow: none;
+}
+
+
+/* =========================================================
+   TARJETA PRINCIPAL
+   ========================================================= */
+
+.roles-card {
+  min-width: 0;
+
+  background: #1e1e1e;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  border-radius: 14px;
+
+  overflow: hidden;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   HEADER TARJETA
+   ========================================================= */
+
+.card-header {
+  min-height: 88px;
+
+  display: flex;
+
+  align-items: center;
+
+  padding: 20px 24px;
+
+  box-sizing: border-box;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.card-title {
+  display: flex;
+
+  align-items: center;
+
+  gap: 14px;
+}
+
+.card-icon {
+  width: 42px;
+  height: 42px;
+
+  min-width: 42px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background: rgba(255, 107, 0, 0.12);
+
+  color: #ff8c00;
+}
+
+.card-icon svg {
+  width: 21px;
+  height: 21px;
+}
+
+.card-title h2 {
+  margin: 0;
+
+  color: #f1f5f9;
+
+  font-size: 15px;
+
+  font-weight: 700;
+}
+
+.card-title span {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #64748b;
+
+  font-size: 11px;
+}
+
+
+/* =========================================================
+   TABLA
+   ========================================================= */
+
+.table-container {
+  width: 100%;
+
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+
+  min-width: 700px;
+
+  border-collapse: collapse;
+
+  font-size: 12px;
+}
+
+thead {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+th {
+  padding: 14px 24px;
+
+  color: #64748b;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  text-align: left;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.04em;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+td {
+  padding: 15px 24px;
+
+  color: #94a3b8;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+}
+
+tbody tr {
+  transition: background 0.15s ease;
+}
+
+tbody tr:hover {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+
+/* =========================================================
+   ID
+   ========================================================= */
+
+.codigo {
+  color: #64748b;
+
+  font-family: monospace;
+
+  font-size: 11px;
+}
+
+
+/* =========================================================
+   INFORMACIÓN DEL ROL
+   ========================================================= */
+
+.rol-info {
+  display: flex;
+
+  align-items: center;
+
+  gap: 11px;
+}
+
+.rol-icon {
+  width: 34px;
+  height: 34px;
+
+  min-width: 34px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 8px;
+
+  background: rgba(167, 139, 250, 0.10);
+
+  color: #a78bfa;
+}
+
+.rol-icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+.rol-info strong {
+  color: #f1f5f9;
+
+  font-size: 12px;
+
+  font-weight: 700;
+}
+
+.descripcion {
+  color: #64748b;
+
+  font-size: 11px;
+}
+
+
+/* =========================================================
+   ACCIONES
+   ========================================================= */
+
+.acciones {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+}
+
+.acciones button {
+  width: 32px;
+  height: 32px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border: 1px solid rgba(255, 255, 255, 0.09);
+
+  border-radius: 7px;
+
+  background: #252525;
+
+  color: #94a3b8;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.acciones button svg {
+  width: 15px;
+  height: 15px;
+}
+
+.acciones button:hover {
+  transform: translateY(-1px);
+
+  background: #303030;
+}
+
+.acciones .btn-editar:hover {
+  color: #ff8c00;
+
+  border-color: rgba(255, 140, 0, 0.3);
+}
+
+.acciones .btn-eliminar:hover {
+  color: #f87171;
+
+  border-color: rgba(248, 113, 113, 0.3);
+
+  background: rgba(248, 113, 113, 0.07);
+}
+
+
+/* =========================================================
+   ESTADOS
+   ========================================================= */
+
+.state-card {
+  min-height: 320px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 30px;
+
+  box-sizing: border-box;
+
+  background: #1e1e1e;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  border-radius: 14px;
+
+  text-align: center;
+
+  color: #94a3b8;
+}
+
+.state-card h3 {
+  margin: 16px 0 6px;
+
+  color: #e2e8f0;
+
+  font-size: 15px;
+}
+
+.state-card p {
+  margin: 0;
+
+  color: #64748b;
+
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   LOADING
+   ========================================================= */
+
+.loading-spinner {
+  width: 30px;
+  height: 30px;
+
+  border: 3px solid rgba(255, 255, 255, 0.08);
+
+  border-top-color: #ff8c00;
+
+  border-radius: 50%;
+
+  animation: roles-spin 0.8s linear infinite;
+}
+
+@keyframes roles-spin {
+
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+
+}
+
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
+.error-card {
+  border-color: rgba(248, 113, 113, 0.16);
+}
+
+.state-icon {
+  width: 48px;
+  height: 48px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: rgba(248, 113, 113, 0.08);
+
+  color: #f87171;
+}
+
+.state-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.retry-button {
+  margin-top: 18px;
+
+  height: 38px;
+
+  padding: 0 16px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  background: #ff8c00;
+
+  color: #ffffff;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   ESTADO VACÍO
+   ========================================================= */
+
+.empty-state {
+  min-height: 320px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 30px;
+
+  text-align: center;
+}
+
+.empty-icon {
+  width: 58px;
+  height: 58px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  margin-bottom: 15px;
+
+  border-radius: 14px;
+
+  background: rgba(167, 139, 250, 0.09);
+
+  color: #a78bfa;
+}
+
+.empty-icon svg {
+  width: 29px;
+  height: 29px;
+}
+
+.empty-state h3 {
+  margin: 0 0 7px;
+
+  color: #e2e8f0;
+
+  font-size: 15px;
+}
+
+.empty-state p {
+  margin: 0;
+
+  color: #64748b;
+
+  font-size: 12px;
+}
+
+.empty-button {
+  margin-top: 18px;
+}
+
+
+/* =========================================================
+   MODAL
+   ========================================================= */
+
+.modal-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 1000;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 20px;
+
+  box-sizing: border-box;
+
+  background: rgba(0, 0, 0, 0.72);
+
+  backdrop-filter: blur(3px);
+
+  animation: aparecer 0.18s ease;
+}
+
+.modal {
+  width: 100%;
+
+  max-width: 500px;
+
+  max-height: 90vh;
+
+  overflow-y: auto;
+
+  background: #1e1e1e;
+
+  border: 1px solid rgba(255, 255, 255, 0.09);
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 25px 70px rgba(0, 0, 0, 0.55);
+
+  animation: subir 0.2s ease;
+}
+
+
+/* =========================================================
+   HEADER MODAL
+   ========================================================= */
+
+.modal-header {
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 22px 24px;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.modal-label {
+  color: #ff8c00;
+
+  font-size: 9px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.12em;
+}
+
+.modal-header h2 {
+  margin: 5px 0 0;
+
+  color: #f8fafc;
+
+  font-size: 19px;
+
+  font-weight: 700;
+}
+
+.modal-header p {
+  margin: 5px 0 0;
+
+  color: #64748b;
+
+  font-size: 11px;
+}
+
+.modal-close {
+  width: 32px;
+  height: 32px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border: none;
+
+  border-radius: 7px;
+
+  background: transparent;
+
+  color: #64748b;
+
+  cursor: pointer;
+}
+
+.modal-close svg {
+  width: 17px;
+  height: 17px;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.06);
+
+  color: #f1f5f9;
+}
+
+
+/* =========================================================
+   FORMULARIO
+   ========================================================= */
+
+.modal form {
+  padding: 24px;
+}
+
+.form-group {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+.form-group label {
+  color: #cbd5e1;
+
+  font-size: 11px;
+
+  font-weight: 700;
+}
+
+.form-group input {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 11px 12px;
+
+  border: 1px solid rgba(255, 255, 255, 0.10);
+
+  border-radius: 8px;
+
+  outline: none;
+
+  background: #252525;
+
+  color: #f1f5f9;
+
+  font-family: inherit;
+
+  font-size: 12px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.form-group input::placeholder {
+  color: #64748b;
+}
+
+.form-group input:focus {
+  border-color: #ff8c00;
+
+  box-shadow:
+    0 0 0 3px rgba(255, 140, 0, 0.10);
+}
+
+
+/* =========================================================
+   ERROR FORMULARIO
+   ========================================================= */
+
+.field-error {
+  color: #f87171;
+
+  font-size: 10px;
+}
+
+.form-error {
+  margin-top: 16px;
+
+  padding: 10px 12px;
+
+  border: 1px solid rgba(248, 113, 113, 0.18);
+
+  border-radius: 7px;
+
+  background: rgba(248, 113, 113, 0.07);
+
+  color: #fca5a5;
+
+  font-size: 11px;
+}
+
+
+/* =========================================================
+   FOOTER MODAL
+   ========================================================= */
+
+.modal-footer {
+  display: flex;
+
+  justify-content: flex-end;
+
+  gap: 9px;
+
+  margin-top: 24px;
+
+  padding-top: 18px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.btn-secondary {
+  min-height: 40px;
+
+  padding: 0 16px;
+
+  border: 1px solid rgba(255, 255, 255, 0.10);
+
+  border-radius: 8px;
+
+  background: #252525;
+
+  color: #cbd5e1;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background: #303030;
+}
+
+
+/* =========================================================
+   SPINNER BOTÓN
+   ========================================================= */
+
+.button-spinner {
+  width: 13px;
+  height: 13px;
+
+  border: 2px solid rgba(255, 255, 255, 0.35);
+
+  border-top-color: #ffffff;
+
+  border-radius: 50%;
+
+  animation: roles-spin 0.7s linear infinite;
+}
+
+
+/* =========================================================
+   ANIMACIONES
+   ========================================================= */
+
+@keyframes aparecer {
+
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+
+}
+
+@keyframes subir {
+
+  from {
+    opacity: 0;
+
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: translateY(0);
+  }
+
+}
+
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0b0b0b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #303030;
+
+  border-radius: 10px;
+
+  border: 2px solid #0b0b0b;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #444444;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 800px) {
+
+  .roles {
+    padding: 28px 22px 40px;
+  }
+
+  .roles-header {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .roles-header .btn-primary {
+    width: 100%;
+  }
+
+}
+
+@media (max-width: 600px) {
+
+  .roles {
+    padding: 24px 16px 35px;
+  }
+
+  .card-header {
+    padding: 18px;
+  }
+
+  th,
+  td {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .modal-overlay {
+    padding: 12px;
+  }
+
+  .modal-header {
+    padding: 18px;
+  }
+
+  .modal form {
+    padding: 18px;
+  }
+
+  .modal-footer {
+    flex-direction: column-reverse;
+  }
+
+  .modal-footer button {
+    width: 100%;
+  }
+
+}
