@@ -1,6 +1,8 @@
+
 import { Component, OnInit } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 import {
   FormBuilder,
   FormGroup,
@@ -22,9 +24,9 @@ import {
 @Component({
   selector: 'app-productos',
   imports: [
-  CurrencyPipe,
-  ReactiveFormsModule,
-  FormsModule
+    CurrencyPipe,
+    ReactiveFormsModule,
+    FormsModule
   ],
   templateUrl: './productos.html',
   styleUrl: './productos.css'
@@ -100,6 +102,13 @@ export class Productos implements OnInit {
         [
           Validators.required,
           Validators.maxLength(50)
+        ]
+      ],
+
+      codigoBarras: [
+        '',
+        [
+          Validators.maxLength(100)
         ]
       ],
 
@@ -229,7 +238,7 @@ export class Productos implements OnInit {
       this.terminoBusqueda.trim();
 
     // Si no hay búsqueda,
-    // mostramos todos
+    // mostramos todos los productos
 
     if (!termino) {
 
@@ -329,14 +338,25 @@ export class Productos implements OnInit {
     this.productoForm.reset({
 
       codigo: '',
+
+      codigoBarras: '',
+
       nombre: '',
+
       descripcion: '',
+
       marca: '',
+
       precioCompra: 0,
+
       precioVenta: 0,
+
       stock: 0,
+
       stockMinimo: 0,
+
       unidadMedida: 'PIEZA',
+
       categoriaId: null
 
     });
@@ -363,6 +383,8 @@ export class Productos implements OnInit {
     this.productoForm.patchValue({
 
       codigo: producto.codigo,
+
+      codigoBarras: producto.codigoBarras ?? '',
 
       nombre: producto.nombre,
 
@@ -396,7 +418,9 @@ export class Productos implements OnInit {
   cerrarModal(): void {
 
     if (this.guardando) {
+
       return;
+
     }
 
     this.mostrarModal = false;
@@ -429,11 +453,11 @@ export class Productos implements OnInit {
     this.mensajeError = '';
 
     const producto: ProductoRequest =
-      this.productoForm.value;
+      this.productoForm.getRawValue();
 
 
     // ==========================================
-    // ACTUALIZAR
+    // ACTUALIZAR PRODUCTO
     // ==========================================
 
     if (
@@ -490,7 +514,7 @@ export class Productos implements OnInit {
 
 
     // ==========================================
-    // CREAR
+    // CREAR PRODUCTO
     // ==========================================
 
     this.productoService
@@ -550,55 +574,70 @@ export class Productos implements OnInit {
     );
 
   }
-// ==========================================
-// ELIMINAR PRODUCTO
-// ==========================================
 
-eliminarProducto(producto: Producto): void {
 
-  const confirmar = window.confirm(
-    `¿Estás seguro de eliminar el producto "${producto.nombre}"?\n\n` +
-    `Código: ${producto.codigo}\n` +
-    `Stock: ${producto.stock}`
-  );
+  // ==========================================
+  // ELIMINAR PRODUCTO
+  // ==========================================
 
-  if (!confirmar) {
-    return;
+  eliminarProducto(producto: Producto): void {
+
+    const confirmar = window.confirm(
+
+      `¿Estás seguro de eliminar el producto "${producto.nombre}"?\n\n` +
+
+      `Código: ${producto.codigo}\n` +
+
+      `Código de barras: ${producto.codigoBarras || 'Sin asignar'}\n` +
+
+      `Stock: ${producto.stock}`
+
+    );
+
+    if (!confirmar) {
+
+      return;
+
+    }
+
+    this.productoService
+      .eliminar(producto.id)
+      .subscribe({
+
+        next: () => {
+
+          console.log(
+            'Producto eliminado:',
+            producto.id
+          );
+
+          // Quitamos el producto de la tabla
+
+          this.productos =
+            this.productos.filter(
+              p => p.id !== producto.id
+            );
+
+        },
+
+        error: (err) => {
+
+          console.error(
+            'Error al eliminar producto:',
+            err
+          );
+
+          alert(
+
+            err?.error?.message ??
+            'No se pudo eliminar el producto.'
+
+          );
+
+        }
+
+      });
+
   }
 
-  this.productoService
-    .eliminar(producto.id)
-    .subscribe({
-
-      next: () => {
-
-        console.log(
-          'Producto eliminado:',
-          producto.id
-        );
-
-        // Quitamos el producto de la tabla
-        this.productos = this.productos.filter(
-          p => p.id !== producto.id
-        );
-
-      },
-
-      error: (err) => {
-
-        console.error(
-          'Error al eliminar producto:',
-          err
-        );
-
-        alert(
-          err?.error?.message ??
-          'No se pudo eliminar el producto.'
-        );
-
-      }
-
-    });
-
-}
 }
