@@ -1,1212 +1,799 @@
-/* =========================================================
-   DASHBOARD - FERRE CENTRO
-   Tema oscuro / negro
-   ========================================================= */
 
 :host {
   display: block;
   width: 100%;
-  min-height: 100%;
-  box-sizing: border-box;
-}
-
-
-/* =========================================================
-   CONTENEDOR PRINCIPAL
-   ========================================================= */
-
-.dashboard {
-  width: 100%;
-  max-width: 1500px;
-
-  margin: 0 auto;
-
-  padding: 34px 38px 50px;
-
-  box-sizing: border-box;
-
-  color: #f1f5f9;
-
-  background: #000000;
-
-  overflow: visible;
-}
-
-
-/* =========================================================
-   ENCABEZADO
-   ========================================================= */
-
-.dashboard-header {
-  display: flex;
-
-  align-items: flex-end;
-
-  justify-content: space-between;
-
-  gap: 24px;
-
-  margin-bottom: 32px;
-}
-
-
-.header-info {
   min-width: 0;
-}
-
-
-.section-label {
-  display: block;
-
-  margin-bottom: 10px;
-
-  color: #ff8500;
-
-  font-size: 12px;
-
-  font-weight: 800;
-
-  letter-spacing: 0.8px;
-
-  text-transform: uppercase;
-}
-
-
-.dashboard-header h1 {
-  margin: 0;
-
-  color: #f8fafc;
-
-  font-size: 30px;
-
-  font-weight: 700;
-
-  line-height: 1.2;
-}
-
-
-.dashboard-header p {
-  margin: 8px 0 0;
-
-  color: #64748b;
-
-  font-size: 13px;
-
-  line-height: 1.5;
-}
-
-
-/* =========================================================
-   BOTÓN ACTUALIZAR
-   ========================================================= */
-
-.refresh-button {
-  height: 44px;
-
-  display: inline-flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  gap: 9px;
-
-  flex-shrink: 0;
-
-  padding: 0 17px;
-
-  border: 1px solid rgba(255, 255, 255, 0.08);
-
-  border-radius: 9px;
-
-  background: #1b1b1b;
-
   color: #f1f5f9;
-
-  font-size: 12px;
-
-  font-weight: 600;
-
-  cursor: pointer;
-
-  transition:
-    background 0.2s ease,
-    border-color 0.2s ease,
-    transform 0.2s ease;
 }
 
-
-.refresh-button:hover:not(:disabled) {
-  background: #242424;
-
-  border-color: rgba(255, 133, 0, 0.35);
-
-  transform: translateY(-1px);
+.bi-dashboard {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 28px 32px 45px;
+  box-sizing: border-box;
+  color: #f1f5f9;
 }
 
-
-.refresh-button:disabled {
-  opacity: 0.6;
-
-  cursor: not-allowed;
+.bi-header,
+.filter-heading,
+.panel-heading,
+.kpi-top,
+.alert-summary,
+.alert-product,
+.table-summary,
+.table-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
 }
 
-
-.refresh-icon {
-  width: 17px;
-
-  height: 17px;
-
-  flex-shrink: 0;
-}
-
-
-.refresh-icon.spinning {
-  animation: dashboard-spin 0.8s linear infinite;
-}
-
-
-/* =========================================================
-   GRID DE ESTADÍSTICAS
-   ========================================================= */
-
-.stats-grid {
-  display: grid;
-
-  grid-template-columns:
-    repeat(4, minmax(0, 1fr));
-
-  gap: 18px;
-
+.bi-header {
   margin-bottom: 24px;
 }
 
-
-/* =========================================================
-   TARJETAS DE ESTADÍSTICAS
-   ========================================================= */
-
-.stat-card {
-  min-width: 0;
-
-  min-height: 145px;
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 16px;
-
-  padding: 22px;
-
-  box-sizing: border-box;
-
-  background: #1c1c1c;
-
-  border: 1px solid rgba(255, 255, 255, 0.08);
-
-  border-radius: 13px;
-
-  transition:
-    transform 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-
-.stat-card:hover {
-  transform: translateY(-2px);
-
-  border-color: rgba(255, 133, 0, 0.28);
-
-  box-shadow:
-    0 8px 24px rgba(0, 0, 0, 0.35);
-}
-
-
-/* =========================================================
-   ICONOS DE ESTADÍSTICAS
-   ========================================================= */
-
-.stat-icon {
-  width: 52px;
-
-  height: 52px;
-
-  min-width: 52px;
-
-  flex-shrink: 0;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  border-radius: 11px;
-}
-
-
-/*
-   MUY IMPORTANTE:
-   Limita el SVG para que nunca se haga gigante.
-*/
-
-.stat-icon svg {
-  width: 23px;
-
-  height: 23px;
-
-  max-width: 23px;
-
-  max-height: 23px;
-
+.eyebrow,
+.section-kicker {
   display: block;
-}
-
-
-/* Ventas */
-
-.sales-card .stat-icon {
-  color: #ff9800;
-
-  background: rgba(255, 133, 0, 0.13);
-}
-
-
-/* Productos */
-
-.products-card .stat-icon {
-  color: #38bdf8;
-
-  background: rgba(56, 189, 248, 0.12);
-}
-
-
-/* Compras */
-
-.purchases-card .stat-icon {
-  color: #a78bfa;
-
-  background: rgba(167, 139, 250, 0.12);
-}
-
-
-/* Stock */
-
-.stock-card .stat-icon {
-  color: #f87171;
-
-  background: rgba(248, 113, 113, 0.12);
-}
-
-
-/* =========================================================
-   INFORMACIÓN DE ESTADÍSTICAS
-   ========================================================= */
-
-.stat-info {
-  min-width: 0;
-
-  overflow: hidden;
-}
-
-
-.stat-info span {
-  display: block;
-
-  margin-bottom: 6px;
-
-  color: #7da2c7;
-
-  font-size: 12px;
-
-  line-height: 1.3;
-}
-
-
-.stat-info strong {
-  display: block;
-
-  color: #f8fafc;
-
-  font-size: 21px;
-
-  font-weight: 700;
-
-  line-height: 1.2;
-
-  white-space: nowrap;
-}
-
-
-.stat-info small {
-  display: block;
-
-  margin-top: 6px;
-
-  color: #64748b;
-
+  color: #ff8500;
   font-size: 10px;
-
-  line-height: 1.4;
+  font-weight: 800;
+  letter-spacing: 1.1px;
 }
 
+.bi-header h1 {
+  margin: 8px 0 5px;
+  color: #fff;
+  font-size: 27px;
+  font-weight: 750;
+}
 
-/* =========================================================
-   GRID INFERIOR
-   ========================================================= */
+.bi-header p,
+.panel-heading p {
+  margin: 0;
+  color: #718096;
+  font-size: 11px;
+}
 
-.dashboard-grid {
+.refresh-button,
+.primary-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 11px 16px;
+  border: 1px solid #373737;
+  border-radius: 8px;
+  background: #252525;
+  color: #f1f5f9;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.refresh-button:hover {
+  border-color: #ff8500;
+  color: #ff8500;
+}
+
+.refresh-button:disabled {
+  opacity: .55;
+  cursor: wait;
+}
+
+.refresh-button span {
+  font-size: 18px;
+}
+
+.spinning {
+  animation: spin .8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* FILTROS */
+
+.filter-panel,
+.kpi-card,
+.bi-card,
+.quick-card,
+.state-panel {
+  background: #1b1b1b;
+  border: 1px solid #303030;
+  border-radius: 10px;
+}
+
+.filter-panel {
+  margin-bottom: 18px;
+  padding: 18px 20px;
+}
+
+.filter-heading {
+  margin-bottom: 16px;
+}
+
+.filter-heading h2 {
+  margin: 5px 0 0;
+  color: #f8fafc;
+  font-size: 14px;
+}
+
+.clear-button {
+  padding: 7px 10px;
+  border: 0;
+  background: transparent;
+  color: #ff9a32;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.clear-button:hover {
+  color: #ffc078;
+}
+
+.filters-grid {
   display: grid;
-
-  grid-template-columns:
-    minmax(0, 1.45fr)
-    minmax(0, 1fr);
-
-  gap: 20px;
-
-  align-items: start;
-}
-
-
-/* =========================================================
-   TARJETAS GRANDES
-   ========================================================= */
-
-.dashboard-card {
-  min-width: 0;
-
-  background: #1c1c1c;
-
-  border: 1px solid rgba(255, 255, 255, 0.08);
-
-  border-radius: 13px;
-
-  overflow: hidden;
-
-  box-sizing: border-box;
-}
-
-
-/* =========================================================
-   ENCABEZADO DE TARJETAS
-   ========================================================= */
-
-.card-header {
-  min-height: 88px;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  gap: 18px;
-
-  padding: 20px 22px;
-
-  box-sizing: border-box;
-
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-}
-
-
-/* =========================================================
-   TÍTULO DE TARJETA
-   ========================================================= */
-
-.card-title {
-  min-width: 0;
-
-  display: flex;
-
-  align-items: center;
-
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 13px;
 }
 
-
-/* =========================================================
-   ICONOS DE TARJETAS INFERIORES
-   ========================================================= */
-
-/*
-   ESTE ERA EL PROBLEMA DE TU CAPTURA.
-
-   Antes el SVG podía crecer demasiado.
-   Ahora queda perfectamente controlado.
-*/
-
-.card-icon {
-  width: 42px;
-
-  height: 42px;
-
-  min-width: 42px;
-
-  flex-shrink: 0;
-
+.filter-control {
   display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  border-radius: 10px;
-}
-
-
-/* Tamaño REAL del SVG */
-
-.card-icon svg {
-  width: 20px;
-
-  height: 20px;
-
-  max-width: 20px;
-
-  max-height: 20px;
-
-  display: block;
-}
-
-
-/* Icono ventas */
-
-.sales-icon {
-  color: #ff9800;
-
-  background: rgba(255, 133, 0, 0.13);
-}
-
-
-/* Icono productos */
-
-.products-icon {
-  color: #38bdf8;
-
-  background: rgba(56, 189, 248, 0.12);
-}
-
-
-/* =========================================================
-   TEXTO DEL HEADER DE TARJETAS
-   ========================================================= */
-
-.card-title h2 {
-  margin: 0;
-
-  color: #f1f5f9;
-
-  font-size: 15px;
-
-  font-weight: 700;
-
-  line-height: 1.3;
-}
-
-
-.card-title span {
-  display: block;
-
-  margin-top: 4px;
-
-  color: #64748b;
-
-  font-size: 11px;
-
-  line-height: 1.4;
-}
-
-
-/* =========================================================
-   ENLACES
-   ========================================================= */
-
-.card-link {
-  flex-shrink: 0;
-
-  display: inline-flex;
-
-  align-items: center;
-
-  gap: 6px;
-
-  color: #ff8500;
-
-  font-size: 11px;
-
-  font-weight: 600;
-
-  text-decoration: none;
-
-  white-space: nowrap;
-
-  transition: color 0.2s ease;
-}
-
-
-.card-link:hover {
-  color: #ffa733;
-}
-
-
-.card-link svg {
-  width: 14px;
-
-  height: 14px;
-
-  flex-shrink: 0;
-}
-
-
-/* =========================================================
-   CONTENIDO DEL RESUMEN
-   ========================================================= */
-
-.summary-content {
-  padding: 4px 22px 16px;
-
-  box-sizing: border-box;
-}
-
-
-/* =========================================================
-   ITEMS DEL RESUMEN
-   ========================================================= */
-
-.summary-item {
-  min-height: 72px;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  gap: 20px;
-
-  padding: 15px 0;
-
-  box-sizing: border-box;
-
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-
-.summary-item:last-child {
-  border-bottom: none;
-}
-
-
-/* =========================================================
-   TEXTO DEL RESUMEN
-   ========================================================= */
-
-.summary-item > div {
+  flex-direction: column;
+  gap: 7px;
   min-width: 0;
 }
 
-
-.summary-title {
-  display: block;
-
-  margin-bottom: 4px;
-
-  color: #f1f5f9;
-
-  font-size: 12px;
-
+.filter-control > span {
+  color: #94a3b8;
+  font-size: 10px;
   font-weight: 600;
 }
 
-
-.summary-item span {
-  display: block;
-
-  color: #64748b;
-
-  font-size: 10px;
-
-  line-height: 1.4;
-}
-
-
-.summary-value {
-  flex-shrink: 0;
-
-  color: #f1f5f9;
-
-  font-size: 15px;
-
-  font-weight: 700;
-
-  text-align: right;
-}
-
-
-.summary-value.money {
-  color: #00c98b;
-}
-
-
-/* =========================================================
-   STOCK BAJO
-   ========================================================= */
-
-.low-stock-box {
-  min-height: 68px;
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 12px;
-
-  margin-top: 8px;
-
-  padding: 12px;
-
-  box-sizing: border-box;
-
-  border: 1px solid rgba(248, 113, 113, 0.15);
-
-  border-radius: 10px;
-
-  background: rgba(248, 113, 113, 0.08);
-}
-
-
-/* Cuando NO hay stock bajo */
-
-.low-stock-box.no-stock-warning {
-  border-color: rgba(0, 201, 139, 0.15);
-
-  background: rgba(0, 201, 139, 0.07);
-}
-
-
-/* =========================================================
-   ICONO STOCK BAJO
-   ========================================================= */
-
-.low-stock-icon {
-  width: 38px;
-
+.filter-control select,
+.filter-control input {
+  width: 100%;
   height: 38px;
+  padding: 0 11px;
+  box-sizing: border-box;
+  border: 1px solid #393939;
+  border-radius: 6px;
+  outline: none;
+  background: #252525;
+  color: #e2e8f0;
+  font-family: inherit;
+  font-size: 11px;
+}
 
-  min-width: 38px;
+.filter-control select:focus,
+.filter-control input:focus {
+  border-color: #ff8500;
+}
 
-  flex-shrink: 0;
+/* INDICADORES */
 
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 13px;
+  margin-bottom: 18px;
+}
+
+.kpi-card {
+  min-width: 0;
+  min-height: 116px;
+  padding: 16px;
+  box-sizing: border-box;
+  transition: .2s;
+}
+
+.kpi-card:hover,
+.quick-card:hover {
+  border-color: rgba(255,133,0,.45);
+  transform: translateY(-2px);
+}
+
+.kpi-top > span:first-child {
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.kpi-icon,
+.quick-icon,
+.panel-icon {
   display: flex;
-
   align-items: center;
-
   justify-content: center;
+  flex-shrink: 0;
+  border-radius: 8px;
+}
 
-  border-radius: 9px;
+.kpi-icon {
+  width: 29px;
+  height: 29px;
+  font-size: 16px;
+  font-weight: 700;
+}
 
+.orange {
+  color: #ff8500;
+  background: rgba(255,133,0,.12);
+}
+
+.blue {
+  color: #38bdf8;
+  background: rgba(56,189,248,.12);
+}
+
+.purple {
+  color: #a78bfa;
+  background: rgba(167,139,250,.12);
+}
+
+.red {
   color: #f87171;
-
-  background: rgba(248, 113, 113, 0.10);
+  background: rgba(248,113,113,.12);
 }
 
-
-/*
-   IMPORTANTE:
-   Este también estaba creciendo demasiado.
-*/
-
-.low-stock-icon svg {
-  width: 19px;
-
-  height: 19px;
-
-  max-width: 19px;
-
-  max-height: 19px;
-
-  display: block;
-}
-
-
-.no-stock-warning .low-stock-icon {
+.green {
   color: #00c98b;
-
-  background: rgba(0, 201, 139, 0.10);
+  background: rgba(0,201,139,.12);
 }
 
+.kpi-card > strong {
+  display: block;
+  margin-top: 12px;
+  color: #f8fafc;
+  font-size: 25px;
+  font-weight: 750;
+  line-height: 1;
+}
 
-/* =========================================================
-   TEXTO STOCK
-   ========================================================= */
+.kpi-card > small {
+  display: block;
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 9px;
+}
 
-.low-stock-box > div:last-child {
+/* GRÁFICAS */
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.bi-card {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.chart-card {
+  min-height: 340px;
+}
+
+.panel-heading {
+  min-height: 78px;
+  padding: 16px 18px;
+  box-sizing: border-box;
+  border-bottom: 1px solid #303030;
+}
+
+.panel-heading h2 {
+  margin: 5px 0;
+  color: #f8fafc;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.panel-icon {
+  width: 34px;
+  height: 34px;
+  background: rgba(255,133,0,.12);
+  color: #ff8500;
+  font-size: 19px;
+}
+
+.blue-icon {
+  color: #38bdf8;
+  background: rgba(56,189,248,.12);
+}
+
+.alert-panel-icon {
+  color: #f87171;
+  background: rgba(248,113,113,.12);
+}
+
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 245px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.donut-container {
+  max-width: 430px;
+  height: 255px;
+  margin: 0 auto;
+}
+
+/* ALERTAS */
+
+.alerts-analysis {
+  margin-bottom: 18px;
+}
+
+.alert-summary {
+  padding: 16px 18px;
+  border-bottom: 1px solid #303030;
+}
+
+.alert-number strong {
+  display: block;
+  color: #f87171;
+  font-size: 27px;
+}
+
+.alert-number span {
+  color: #94a3b8;
+  font-size: 9px;
+}
+
+.alert-summary a,
+.outline-link {
+  color: #ff8500;
+  font-size: 10px;
+  font-weight: 650;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.alert-summary a:hover,
+.outline-link:hover {
+  color: #ffb15f;
+}
+
+.alert-product {
+  padding: 12px 18px;
+  border-bottom: 1px solid #292929;
+}
+
+.alert-product-info {
   min-width: 0;
 }
 
-
-.low-stock-box strong {
+.alert-product-info strong {
   display: block;
+  overflow: hidden;
+  color: #e2e8f0;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
-  margin-bottom: 3px;
+.alert-product-info small {
+  display: block;
+  margin-top: 4px;
+  color: #64748b;
+  font-size: 9px;
+}
 
-  color: #f87171;
-
-  font-size: 15px;
-
+.alert-product > span {
+  flex-shrink: 0;
+  font-size: 9px;
   font-weight: 700;
 }
 
-
-.no-stock-warning strong {
-  color: #00c98b;
+.alert-product > span.agotado,
+.alert-product > span.critico {
+  color: #f87171;
 }
 
+.all-clear {
+  padding: 22px 18px;
+  color: #00c98b;
+  font-size: 11px;
+}
 
-.low-stock-box span {
-  display: block;
+/* TABLA */
 
-  color: #64748b;
+.inventory-section {
+  margin-bottom: 18px;
+}
 
+.inventory-heading {
+  min-height: 85px;
+}
+
+.outline-link {
+  padding: 9px 11px;
+  border: 1px solid rgba(255,133,0,.35);
+  border-radius: 6px;
+}
+
+.table-summary {
+  padding: 13px 18px;
+  border-bottom: 1px solid #303030;
+  color: #718096;
   font-size: 10px;
 }
 
-
-/* =========================================================
-   ESTADOS
-   ========================================================= */
-
-.state-card {
-  min-height: 300px;
-
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: center;
-
-  justify-content: center;
-
-  padding: 30px;
-
-  box-sizing: border-box;
-
-  background: #1c1c1c;
-
-  border: 1px solid rgba(255, 255, 255, 0.08);
-
-  border-radius: 13px;
-
-  text-align: center;
-}
-
-
-.state-card h3 {
-  margin: 14px 0 6px;
-
-  color: #f1f5f9;
-
-  font-size: 15px;
-}
-
-
-.state-card p {
-  margin: 0;
-
-  color: #64748b;
-
-  font-size: 12px;
-}
-
-
-/* =========================================================
-   LOADING
-   ========================================================= */
-
-.loading-spinner {
-  width: 30px;
-
-  height: 30px;
-
-  border: 3px solid rgba(255, 255, 255, 0.08);
-
-  border-top-color: #ff8500;
-
-  border-radius: 50%;
-
-  animation: dashboard-spin 0.8s linear infinite;
-}
-
-
-@keyframes dashboard-spin {
-
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-
-}
-
-
-/* =========================================================
-   ERROR
-   ========================================================= */
-
-.error-card {
-  border-color: rgba(239, 68, 68, 0.18);
-}
-
-
-.state-icon {
-  width: 44px;
-
-  height: 44px;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  border-radius: 10px;
-}
-
-
-.state-icon svg {
-  width: 22px;
-
-  height: 22px;
-
-  max-width: 22px;
-
-  max-height: 22px;
-}
-
-
-.error-icon {
-  color: #f87171;
-
-  background: rgba(248, 113, 113, 0.10);
-}
-
-
-.retry-button {
-  height: 40px;
-
-  margin-top: 18px;
-
-  padding: 0 18px;
-
-  border: none;
-
-  border-radius: 8px;
-
-  background: #ff8500;
-
-  color: #ffffff;
-
-  font-size: 12px;
-
-  font-weight: 700;
-
-  cursor: pointer;
-
-  transition:
-    background 0.2s ease,
-    transform 0.2s ease;
-}
-
-
-.retry-button:hover {
-  background: #ff9d26;
-
-  transform: translateY(-1px);
-}
-
-
-/* =========================================================
-   ESTADO VACÍO
-   ========================================================= */
-
-.empty-state {
-  min-height: 220px;
-
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: center;
-
-  justify-content: center;
-
-  padding: 30px;
-
-  box-sizing: border-box;
-
-  color: #64748b;
-
-  text-align: center;
-}
-
-
-.empty-icon {
-  margin-bottom: 12px;
-
-  opacity: 0.5;
-}
-
-
-.empty-icon svg {
-  width: 30px;
-
-  height: 30px;
-
-  max-width: 30px;
-
-  max-height: 30px;
-}
-
-
-.empty-state h3 {
-  margin: 0 0 6px;
-
+.table-summary strong {
   color: #e2e8f0;
-
-  font-size: 15px;
 }
 
+.live-indicator {
+  color: #00c98b;
+}
 
-.empty-state p {
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.inventory-table {
+  width: 100%;
+  min-width: 950px;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.inventory-table thead {
+  background: #242424;
+}
+
+.inventory-table th {
+  padding: 13px 14px;
+  color: #8491a2;
+  font-size: 9px;
+  font-weight: 750;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.inventory-table td {
+  padding: 13px 14px;
+  border-bottom: 1px solid #2c2c2c;
+  color: #cbd5e1;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.inventory-table tbody tr {
+  transition: background .15s;
+}
+
+.inventory-table tbody tr:hover {
+  background: rgba(255,133,0,.045);
+}
+
+.product-cell strong {
+  display: block;
+  max-width: 200px;
+  overflow: hidden;
+  color: #f1f5f9;
+  font-size: 10px;
+  text-overflow: ellipsis;
+}
+
+.product-cell small {
+  display: block;
+  margin-top: 4px;
+  color: #718096;
+  font-size: 9px;
+}
+
+.status-pill {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 20px;
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.status-pill.estable {
+  color: #00c98b;
+  background: rgba(0,201,139,.12);
+}
+
+.status-pill.critico,
+.status-pill.agotado {
+  color: #f87171;
+  background: rgba(248,113,113,.12);
+}
+
+.no-results {
+  padding: 35px !important;
+  color: #718096 !important;
+  text-align: center;
+}
+
+.table-footer {
+  padding: 13px 18px;
+  border-top: 1px solid #303030;
+  color: #718096;
+  font-size: 9px;
+}
+
+.table-footer a {
+  color: #ff8500;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* ACCESOS RÁPIDOS */
+
+.quick-access {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.quick-card {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px;
+  color: inherit;
+  text-decoration: none;
+  transition: .2s;
+}
+
+.quick-icon {
+  width: 38px;
+  height: 38px;
+  font-size: 17px;
+}
+
+.quick-card > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.quick-card strong {
+  display: block;
+  color: #f1f5f9;
+  font-size: 11px;
+}
+
+.quick-card small {
+  display: block;
+  margin-top: 4px;
+  color: #718096;
+  font-size: 9px;
+}
+
+.quick-arrow {
+  color: #ff8500;
+}
+
+/* CARGA Y ERROR */
+
+.state-panel {
+  min-height: 270px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  text-align: center;
+}
+
+.state-panel h3 {
+  margin: 8px 0 0;
+  color: #f1f5f9;
+  font-size: 14px;
+}
+
+.state-panel p {
   margin: 0;
-
-  font-size: 12px;
+  color: #718096;
+  font-size: 11px;
 }
 
-
-/* =========================================================
-   SCROLLBAR
-   ========================================================= */
-
-::-webkit-scrollbar {
-  width: 9px;
-
-  height: 9px;
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #333;
+  border-top-color: #ff8500;
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
 }
 
-
-::-webkit-scrollbar-track {
-  background: #000000;
+.primary-button {
+  margin-top: 12px;
+  border-color: #ff8500;
+  background: #ff8500;
+  color: #fff;
 }
 
+/* RESPONSIVE */
 
-::-webkit-scrollbar-thumb {
-  background: #2d2d2d;
-
-  border: 2px solid #000000;
-
-  border-radius: 10px;
+@media (max-width: 1250px) {
+  .kpi-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
-
-::-webkit-scrollbar-thumb:hover {
-  background: #444444;
-}
-
-
-/* =========================================================
-   SELECCIÓN
-   ========================================================= */
-
-::selection {
-  background: rgba(255, 133, 0, 0.35);
-
-  color: #ffffff;
-}
-
-
-/* =========================================================
-   RESPONSIVE - 1300px
-   ========================================================= */
-
-@media (max-width: 1300px) {
-
-  .dashboard {
-    padding-left: 30px;
-
-    padding-right: 30px;
+@media (max-width: 850px) {
+  .bi-dashboard {
+    padding: 24px 20px 35px;
   }
 
-  .stats-grid {
-    gap: 16px;
-  }
-
-  .stat-card {
-    padding: 20px;
-  }
-
-}
-
-
-/* =========================================================
-   RESPONSIVE - 1100px
-   ========================================================= */
-
-@media (max-width: 1100px) {
-
-  .stats-grid {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
-  }
-
-  .dashboard-grid {
+  .charts-grid {
     grid-template-columns: 1fr;
   }
 
+  .filters-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .search-control {
+    grid-column: 1 / -1;
+  }
 }
 
-
-/* =========================================================
-   RESPONSIVE - 800px
-   ========================================================= */
-
-@media (max-width: 800px) {
-
-  .dashboard {
-    padding: 28px 22px 40px;
+@media (max-width: 600px) {
+  .bi-dashboard {
+    padding: 20px 14px 30px;
   }
 
-  .dashboard-header {
+  .bi-header {
     align-items: flex-start;
-
     flex-direction: column;
-
-    margin-bottom: 25px;
-  }
-
-  .dashboard-header h1 {
-    font-size: 26px;
   }
 
   .refresh-button {
     width: 100%;
   }
 
-  .stats-grid {
-    gap: 14px;
-  }
-
-  .stat-card {
-    min-height: 125px;
-
-    padding: 18px;
-  }
-
-}
-
-
-/* =========================================================
-   RESPONSIVE - 600px
-   ========================================================= */
-
-@media (max-width: 600px) {
-
-  .dashboard {
-    padding: 24px 16px 35px;
-  }
-
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .stat-card {
-    min-height: 115px;
-  }
-
-  .dashboard-grid {
-    gap: 14px;
-  }
-
-  .card-header {
-    padding: 18px;
-
-    align-items: flex-start;
-  }
-
-  .summary-content {
-    padding-left: 18px;
-
-    padding-right: 18px;
-  }
-
-}
-
-
-/* =========================================================
-   RESPONSIVE - 450px
-   ========================================================= */
-
-@media (max-width: 450px) {
-
-  .dashboard-header h1 {
+  .bi-header h1 {
     font-size: 23px;
   }
 
-  .stat-card {
-    gap: 13px;
-
-    padding: 17px;
+  .filters-grid,
+  .kpi-grid {
+    grid-template-columns: 1fr 1fr;
   }
 
-  .stat-icon {
-    width: 46px;
-
-    height: 46px;
-
-    min-width: 46px;
+  .kpi-card {
+    min-height: 110px;
+    padding: 12px;
   }
 
-  .stat-icon svg {
-    width: 21px;
-
-    height: 21px;
-
-    max-width: 21px;
-
-    max-height: 21px;
+  .kpi-card > strong {
+    font-size: 22px;
   }
 
-  .stat-info strong {
-    font-size: 18px;
+  .chart-container {
+    height: 230px;
+    padding: 12px;
   }
 
-  .card-header {
-    flex-direction: column;
-
+  .inventory-heading,
+  .table-footer {
     align-items: flex-start;
-
-    gap: 12px;
-  }
-
-  .card-link {
-    font-size: 11px;
-  }
-
-  .summary-item {
-    align-items: flex-start;
-
     flex-direction: column;
-
-    gap: 7px;
   }
 
-  .summary-value {
-    text-align: left;
+  .quick-access {
+    grid-template-columns: 1fr;
   }
 
+  .filter-heading {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 390px) {
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filters-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .search-control {
+    grid-column: auto;
+  }
+}
+
+
+/* ==========================================
+   ESPACIADO GENERAL DEL DASHBOARD
+========================================== */
+
+/* Separación entre encabezado y acciones rápidas */
+.bi-header {
+  margin-bottom: 24px;
+}
+
+/* Acciones rápidas */
+.quick-access {
+  margin-top: 0;
+  margin-bottom: 26px;
+  gap: 16px;
+}
+
+/* Separación entre indicadores y gráficas */
+.kpi-grid {
+  margin-top: 0;
+  margin-bottom: 26px;
+  gap: 16px;
+}
+
+/* Separación entre gráficas */
+.charts-grid {
+  margin-top: 0;
+  margin-bottom: 26px;
+  gap: 20px;
+}
+
+/* Separación de alertas */
+.alerts-analysis {
+  margin-top: 0;
+  margin-bottom: 26px;
+}
+
+/* Separación de la tabla */
+.inventory-section {
+  margin-top: 0;
+  margin-bottom: 26px;
+}
+
+/* Un poco más de espacio interno en las tarjetas */
+.kpi-card {
+  padding: 20px;
+}
+
+.chart-card {
+  padding-bottom: 18px;
+}
+
+/* Adaptación para pantallas pequeñas */
+@media (max-width: 768px) {
+  .bi-header {
+    margin-bottom: 20px;
+  }
+
+  .quick-access,
+  .kpi-grid,
+  .charts-grid,
+  .alerts-analysis,
+  .inventory-section {
+    margin-bottom: 20px;
+  }
+
+  .quick-access,
+  .kpi-grid,
+  .charts-grid {
+    gap: 14px;
+  }
+}
+
+/* ==========================================
+   ACCESOS RÁPIDOS SEGÚN EL ROL
+========================================== */
+
+/* DISTRIBUCIÓN PARA VENDEDOR */
+.quick-access-vendedor {
+  grid-template-columns: repeat(2, minmax(0, 420px));
+  justify-content: start;
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .quick-access-vendedor {
+    grid-template-columns: 1fr;
+  }
 }
