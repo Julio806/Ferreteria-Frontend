@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 import {
@@ -75,7 +75,8 @@ export class NuevaCompra implements OnInit {
     private productoService: ProductoService,
     private compraService: CompraService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+     private route: ActivatedRoute
   ) {}
 
   // ==========================================
@@ -121,43 +122,50 @@ export class NuevaCompra implements OnInit {
   // CARGAR PRODUCTOS
   // ==========================================
 
-  cargarProductos(): void {
+ cargarProductos(): void {
+  this.cargando = true;
+  this.error = '';
 
-    this.cargando = true;
+  this.productoService.obtenerActivos().subscribe({
+    next: productos => {
+      this.productos = productos;
+      this.productosFiltrados = [...productos];
+      this.cargando = false;
 
-    this.error = '';
+      this.route.queryParamMap.subscribe(params => {
+        const productoId = Number(params.get('productoId'));
 
-    this.productoService.obtenerActivos()
-      .subscribe({
-
-        next: productos => {
-
-          this.productos = productos;
-
-          this.productosFiltrados = [...productos];
-
-          this.cargando = false;
-
-        },
-
-        error: error => {
-
-          console.error(
-            'Error al cargar productos:',
-            error
-          );
-
-          this.error =
-            'No se pudieron cargar los productos.';
-
-          this.cargando = false;
-
+        if (!productoId) {
+          return;
         }
 
+        const producto = this.productos.find(
+          p => Number(p.id) === productoId
+        );
+
+        if (producto) {
+          this.agregarProducto(producto);
+          this.buscarProductoTexto = producto.nombre;
+          this.buscarProductos();
+          this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: { productoId: null },
+            queryParamsHandling: 'merge',
+            replaceUrl: true
+          });
+        } else {
+          this.error =
+            'No se encontró el producto seleccionado. Puede estar inactivo o ya no estar disponible.';
+        }
       });
-
-  }
-
+    },
+    error: error => {
+      console.error('Error al cargar productos:', error);
+      this.error = 'No se pudieron cargar los productos.';
+      this.cargando = false;
+    }
+  });
+}
   // ==========================================
   // BUSCAR PRODUCTOS
   // ==========================================
