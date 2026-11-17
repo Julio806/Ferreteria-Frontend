@@ -1,1132 +1,649 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+<section class="reportes">
 
-import {
-  ReporteService,
-  VentaReporte
-} from '../../core/services/reporte.service';
+  <!-- ========================================= -->
+  <!-- HEADER -->
+  <!-- ========================================= -->
 
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+  <div class="reportes-header">
 
-import * as XLSX from 'xlsx';
+    <div>
 
+      <h1>
+        Reportes de ventas
+      </h1>
 
-interface MetodoPagoReporte {
-  nombre: string;
-  cantidad: number;
-  total: number;
-}
+      <p>
+        Consulta y analiza el comportamiento de las ventas.
+      </p>
 
-interface VendedorReporte {
-  nombre: string;
-  cantidad: number;
-  total: number;
-}
-
-interface ProductoReporte {
-  nombre: string;
-  cantidad: number;
-  total: number;
-}
+    </div>
 
 
-@Component({
-  selector: 'app-reportes',
-  standalone: true,
+    <div class="acciones">
 
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
-
-  templateUrl: './reportes.html',
-  styleUrl: './reportes.css'
-})
-export class Reportes implements OnInit {
-
-  private reporteService =
-    inject(ReporteService);
+      <button
+        class="btn-secondary"
+        type="button"
+        (click)="recargar()"
+        [disabled]="loading"
+      >
+        ↻ Actualizar
+      </button>
 
 
-  // ==========================================
-  // VENTAS
-  // ==========================================
-
-  ventas: VentaReporte[] = [];
-
-  ventasFiltradas: VentaReporte[] = [];
-
-
-  // ==========================================
-  // ESTADOS
-  // ==========================================
-
-  loading = true;
-
-  error = '';
+      <button
+        class="btn-excel"
+        type="button"
+        (click)="exportarExcel()"
+        [disabled]="loading || ventasFiltradas.length === 0"
+      >
+        📊 Excel
+      </button>
 
 
-  // ==========================================
-  // FILTROS
-  // ==========================================
+      <button
+        class="btn-pdf"
+        type="button"
+        (click)="exportarPDF()"
+        [disabled]="loading || ventasFiltradas.length === 0"
+      >
+        📄 PDF
+      </button>
 
-  fechaDesde = '';
+    </div>
 
-  fechaHasta = '';
-
-
-  // ==========================================
-  // RESUMEN
-  // ==========================================
-
-  totalVentas = 0;
-
-  ventasCompletadas = 0;
-
-  ventasCanceladas = 0;
-
-  totalVendido = 0;
-
-  totalImpuesto = 0;
-
-  totalSubtotal = 0;
+  </div>
 
 
-  // ==========================================
-  // REPORTES
-  // ==========================================
+  <!-- ========================================= -->
+  <!-- ERROR -->
+  <!-- ========================================= -->
 
-  metodosPago: MetodoPagoReporte[] = [];
+  @if (error) {
 
-  vendedores: VendedorReporte[] = [];
+    <div class="error">
 
-  productos: ProductoReporte[] = [];
+      <div class="error-icon">
+        ⚠️
+      </div>
 
+      <p>
+        {{ error }}
+      </p>
 
-  // ==========================================
-  // INICIO
-  // ==========================================
+      <button
+        class="btn-primary"
+        type="button"
+        (click)="recargar()"
+      >
+        Intentar nuevamente
+      </button>
 
-  ngOnInit(): void {
-
-    this.establecerFechas();
-
-    this.cargarVentas();
+    </div>
 
   }
 
 
-  // ==========================================
-  // FECHAS INICIALES
-  // ==========================================
+  <!-- ========================================= -->
+  <!-- LOADING -->
+  <!-- ========================================= -->
 
-  establecerFechas(): void {
+  @if (loading) {
 
-    const hoy = new Date();
+    <div class="loading">
 
+      <div class="loading-icon">
+        ⏳
+      </div>
 
-    this.fechaHasta =
-      this.formatearFechaInput(hoy);
+      <p>
+        Cargando información de ventas...
+      </p>
 
-
-    const inicio = new Date(hoy);
-
-    inicio.setDate(
-      inicio.getDate() - 30
-    );
-
-
-    this.fechaDesde =
-      this.formatearFechaInput(inicio);
+    </div>
 
   }
 
 
-  // ==========================================
-  // FORMATO FECHA INPUT
-  // ==========================================
+  @if (!loading && !error) {
 
-  private formatearFechaInput(
-    fecha: Date
-  ): string {
+    <!-- ======================================= -->
+    <!-- FILTROS -->
+    <!-- ======================================= -->
 
-    const año =
-      fecha.getFullYear();
+    <div class="filtros">
 
-    const mes =
-      String(
-        fecha.getMonth() + 1
-      ).padStart(2, '0');
+      <div class="filtro-group">
 
-    const dia =
-      String(
-        fecha.getDate()
-      ).padStart(2, '0');
+        <label>
+          Desde
+        </label>
 
+        <input
+          type="date"
+          [(ngModel)]="fechaDesde"
+          (ngModelChange)="aplicarFiltros()"
+        >
 
-    return `${año}-${mes}-${dia}`;
-
-  }
+      </div>
 
 
-  // ==========================================
-  // CARGAR VENTAS
-  // ==========================================
+      <div class="filtro-group">
 
-  cargarVentas(): void {
+        <label>
+          Hasta
+        </label>
 
-    this.loading = true;
+        <input
+          type="date"
+          [(ngModel)]="fechaHasta"
+          (ngModelChange)="aplicarFiltros()"
+        >
 
-    this.error = '';
-
-
-    this.reporteService
-      .obtenerVentas()
-      .subscribe({
-
-        next: (ventas) => {
-
-          this.ventas = ventas || [];
-
-          this.aplicarFiltros();
-
-          this.loading = false;
-
-        },
+      </div>
 
 
-        error: (err) => {
+      <div class="filtro-info">
 
-          console.error(
-            'Error al cargar ventas:',
-            err
-          );
+        <span>
+          Ventas encontradas
+        </span>
 
+        <strong>
+          {{ ventasFiltradas.length }}
+        </strong>
 
-          this.error =
-            'No se pudieron cargar las ventas.';
+      </div>
 
-          this.loading = false;
-
-        }
-
-      });
-
-  }
+    </div>
 
 
-  // ==========================================
-  // APLICAR FILTROS
-  // ==========================================
+    <!-- ======================================= -->
+    <!-- RESUMEN -->
+    <!-- ======================================= -->
 
-  aplicarFiltros(): void {
+    <div class="resumen-grid">
 
-    this.ventasFiltradas =
-      this.ventas.filter(
-        venta => {
+      <div class="resumen-card">
 
-          if (!venta.fechaCreacion) {
-            return false;
+        <div class="resumen-icon">
+          🧾
+        </div>
+
+        <div>
+
+          <span>
+            Total de ventas
+          </span>
+
+          <strong>
+            {{ totalVentas }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div class="resumen-card">
+
+        <div class="resumen-icon">
+          ✓
+        </div>
+
+        <div>
+
+          <span>
+            Ventas completadas
+          </span>
+
+          <strong>
+            {{ ventasCompletadas }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div class="resumen-card">
+
+        <div class="resumen-icon canceladas">
+          ×
+        </div>
+
+        <div>
+
+          <span>
+            Ventas canceladas
+          </span>
+
+          <strong>
+            {{ ventasCanceladas }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div class="resumen-card principal">
+
+        <div class="resumen-icon dinero">
+          $
+        </div>
+
+        <div>
+
+          <span>
+            Total vendido
+          </span>
+
+          <strong>
+            {{ formatearMoneda(totalVendido) }}
+          </strong>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ======================================= -->
+    <!-- MONTOS -->
+    <!-- ======================================= -->
+
+    <div class="montos-grid">
+
+      <div class="monto-card">
+
+        <span>
+          Subtotal vendido
+        </span>
+
+        <strong>
+          {{ formatearMoneda(totalSubtotal) }}
+        </strong>
+
+      </div>
+
+
+      <div class="monto-card">
+
+        <span>
+          Impuestos
+        </span>
+
+        <strong>
+          {{ formatearMoneda(totalImpuesto) }}
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    <!-- ======================================= -->
+    <!-- REPORTES -->
+    <!-- ======================================= -->
+
+    <div class="reportes-grid">
+
+
+      <!-- MÉTODOS DE PAGO -->
+
+      <div class="reporte-card">
+
+        <div class="card-header">
+
+          <h2>
+            Métodos de pago
+          </h2>
+
+          <p>
+            Ventas agrupadas por método.
+          </p>
+
+        </div>
+
+
+        @if (metodosPago.length > 0) {
+
+          @for (
+            metodo of metodosPago;
+            track metodo.nombre
+          ) {
+
+            <div class="lista-item">
+
+              <div class="lista-info">
+
+                <strong>
+                  {{ metodo.nombre }}
+                </strong>
+
+                <small>
+                  {{ metodo.cantidad }}
+                  venta(s)
+                </small>
+
+              </div>
+
+              <div class="lista-total">
+
+                {{ formatearMoneda(metodo.total) }}
+
+              </div>
+
+            </div>
+
           }
 
+        } @else {
 
-          const fechaVenta =
-            venta.fechaCreacion
-              .substring(0, 10);
-
-
-          return (
-            fechaVenta >= this.fechaDesde &&
-            fechaVenta <= this.fechaHasta
-          );
-
-        }
-      );
-
-
-    this.calcularReporte();
-
-  }
-
-
-  // ==========================================
-  // CALCULAR REPORTE
-  // ==========================================
-
-  calcularReporte(): void {
-
-    this.totalVentas =
-      this.ventasFiltradas.length;
-
-
-    this.ventasCompletadas =
-      this.ventasFiltradas.filter(
-        venta =>
-          venta.estado === 'COMPLETADA'
-      ).length;
-
-
-    this.ventasCanceladas =
-      this.ventasFiltradas.filter(
-        venta =>
-          venta.estado === 'CANCELADA'
-      ).length;
-
-
-    const ventasValidas =
-      this.ventasFiltradas.filter(
-        venta =>
-          venta.estado === 'COMPLETADA'
-      );
-
-
-    this.totalSubtotal =
-      ventasValidas.reduce(
-        (total, venta) =>
-          total +
-          Number(venta.subtotal || 0),
-        0
-      );
-
-
-    this.totalImpuesto =
-      ventasValidas.reduce(
-        (total, venta) =>
-          total +
-          Number(venta.impuesto || 0),
-        0
-      );
-
-
-    this.totalVendido =
-      ventasValidas.reduce(
-        (total, venta) =>
-          total +
-          Number(venta.total || 0),
-        0
-      );
-
-
-    this.calcularMetodosPago(
-      ventasValidas
-    );
-
-
-    this.calcularVendedores(
-      ventasValidas
-    );
-
-
-    this.calcularProductos(
-      ventasValidas
-    );
-
-  }
-
-
-  // ==========================================
-  // MÉTODOS DE PAGO
-  // ==========================================
-
-  calcularMetodosPago(
-    ventas: VentaReporte[]
-  ): void {
-
-    const mapa =
-      new Map<
-        string,
-        MetodoPagoReporte
-      >();
-
-
-    ventas.forEach(
-      venta => {
-
-        const nombre =
-          this.formatearMetodoPago(
-            venta.metodoPago
-          );
-
-
-        const existente =
-          mapa.get(nombre);
-
-
-        if (existente) {
-
-          existente.cantidad++;
-
-          existente.total +=
-            Number(
-              venta.total || 0
-            );
-
-        } else {
-
-          mapa.set(
-            nombre,
-            {
-              nombre,
-              cantidad: 1,
-              total:
-                Number(
-                  venta.total || 0
-                )
-            }
-          );
+          <div class="sin-datos">
+            No hay información disponible.
+          </div>
 
         }
 
-      }
-    );
+      </div>
 
 
-    this.metodosPago =
-      Array.from(
-        mapa.values()
-      ).sort(
-        (a, b) =>
-          b.total - a.total
-      );
 
-  }
+      <!-- VENDEDORES -->
 
+      <div class="reporte-card">
 
-  // ==========================================
-  // VENDEDORES
-  // ==========================================
+        <div class="card-header">
 
-  calcularVendedores(
-    ventas: VentaReporte[]
-  ): void {
+          <h2>
+            Ventas por vendedor
+          </h2>
 
-    const mapa =
-      new Map<
-        string,
-        VendedorReporte
-      >();
+          <p>
+            Rendimiento de los vendedores.
+          </p>
+
+        </div>
 
 
-    ventas.forEach(
-      venta => {
+        @if (vendedores.length > 0) {
 
-        const nombre =
-          venta.usuarioNombre ||
-          venta.username ||
-          'Sin vendedor';
+          @for (
+            vendedor of vendedores;
+            track vendedor.nombre
+          ) {
 
+            <div class="lista-item">
 
-        const existente =
-          mapa.get(nombre);
+              <div class="lista-info">
 
+                <strong>
+                  {{ vendedor.nombre }}
+                </strong>
 
-        if (existente) {
+                <small>
+                  {{ vendedor.cantidad }}
+                  venta(s)
+                </small>
 
-          existente.cantidad++;
+              </div>
 
-          existente.total +=
-            Number(
-              venta.total || 0
-            );
+              <div class="lista-total">
 
-        } else {
+                {{ formatearMoneda(vendedor.total) }}
 
-          mapa.set(
-            nombre,
-            {
-              nombre,
-              cantidad: 1,
-              total:
-                Number(
-                  venta.total || 0
-                )
-            }
-          );
+              </div>
 
-        }
-
-      }
-    );
-
-
-    this.vendedores =
-      Array.from(
-        mapa.values()
-      ).sort(
-        (a, b) =>
-          b.total - a.total
-      );
-
-  }
-
-
-  // ==========================================
-  // PRODUCTOS MÁS VENDIDOS
-  // ==========================================
-
-  calcularProductos(
-    ventas: VentaReporte[]
-  ): void {
-
-    const mapa =
-      new Map<
-        string,
-        ProductoReporte
-      >();
-
-
-    ventas.forEach(
-      venta => {
-
-        venta.items?.forEach(
-          item => {
-
-            const nombre =
-              item.productoNombre ||
-              'Producto';
-
-
-            const existente =
-              mapa.get(nombre);
-
-
-            if (existente) {
-
-              existente.cantidad +=
-                Number(
-                  item.cantidad || 0
-                );
-
-
-              existente.total +=
-                Number(
-                  item.subtotal || 0
-                );
-
-            } else {
-
-              mapa.set(
-                nombre,
-                {
-                  nombre,
-                  cantidad:
-                    Number(
-                      item.cantidad || 0
-                    ),
-                  total:
-                    Number(
-                      item.subtotal || 0
-                    )
-                }
-              );
-
-            }
+            </div>
 
           }
-        );
 
-      }
-    );
+        } @else {
 
+          <div class="sin-datos">
+            No hay información disponible.
+          </div>
 
-    this.productos =
-      Array.from(
-        mapa.values()
-      )
-      .sort(
-        (a, b) =>
-          b.cantidad - a.cantidad
-      )
-      .slice(0, 10);
-
-  }
-
-
-  // ==========================================
-  // MÉTODO DE PAGO
-  // ==========================================
-
-  formatearMetodoPago(
-    metodo: string
-  ): string {
-
-    switch (metodo) {
-
-      case 'EFECTIVO':
-        return 'Efectivo';
-
-      case 'TARJETA':
-        return 'Tarjeta';
-
-      case 'TRANSFERENCIA':
-        return 'Transferencia';
-
-      default:
-        return metodo;
-
-    }
-
-  }
-
-
-  // ==========================================
-  // MONEDA
-  // ==========================================
-
-  formatearMoneda(
-    valor: number
-  ): string {
-
-    return Number(
-      valor || 0
-    ).toLocaleString(
-      'es-MX',
-      {
-        style: 'currency',
-        currency: 'MXN'
-      }
-    );
-
-  }
-
-
-  // ==========================================
-  // RECARGAR
-  // ==========================================
-
-  recargar(): void {
-
-    this.cargarVentas();
-
-  }
-
-
-  // ==========================================
-  // EXPORTAR EXCEL
-  // ==========================================
-
-  exportarExcel(): void {
-
-    if (
-      this.ventasFiltradas.length === 0
-    ) {
-      return;
-    }
-
-
-    const ventasExcel =
-      this.ventasFiltradas.map(
-        venta => ({
-
-          Folio:
-            venta.folio,
-
-          Fecha:
-            this.formatearFecha(
-              venta.fechaCreacion
-            ),
-
-          Vendedor:
-            venta.usuarioNombre ||
-            venta.username ||
-            'Sin vendedor',
-
-          MetodoPago:
-            this.formatearMetodoPago(
-              venta.metodoPago
-            ),
-
-          Estado:
-            venta.estado,
-
-          Subtotal:
-            Number(
-              venta.subtotal || 0
-            ),
-
-          Impuesto:
-            Number(
-              venta.impuesto || 0
-            ),
-
-          Total:
-            Number(
-              venta.total || 0
-            )
-
-        })
-      );
-
-
-    const hojaVentas =
-      XLSX.utils.json_to_sheet(
-        ventasExcel
-      );
-
-
-    const resumenExcel = [
-
-      {
-        Concepto: 'Total de ventas',
-        Valor: this.totalVentas
-      },
-
-      {
-        Concepto: 'Ventas completadas',
-        Valor: this.ventasCompletadas
-      },
-
-      {
-        Concepto: 'Ventas canceladas',
-        Valor: this.ventasCanceladas
-      },
-
-      {
-        Concepto: 'Subtotal vendido',
-        Valor: this.totalSubtotal
-      },
-
-      {
-        Concepto: 'Impuestos',
-        Valor: this.totalImpuesto
-      },
-
-      {
-        Concepto: 'Total vendido',
-        Valor: this.totalVendido
-      }
-
-    ];
-
-
-    const hojaResumen =
-      XLSX.utils.json_to_sheet(
-        resumenExcel
-      );
-
-
-    const hojaProductos =
-      XLSX.utils.json_to_sheet(
-        this.productos.map(
-          (producto, index) => ({
-
-            Posicion:
-              index + 1,
-
-            Producto:
-              producto.nombre,
-
-            Unidades:
-              producto.cantidad,
-
-            Total:
-              producto.total
-
-          })
-        )
-      );
-
-
-    const libro =
-      XLSX.utils.book_new();
-
-
-    XLSX.utils.book_append_sheet(
-      libro,
-      hojaResumen,
-      'Resumen'
-    );
-
-
-    XLSX.utils.book_append_sheet(
-      libro,
-      hojaVentas,
-      'Ventas'
-    );
-
-
-    XLSX.utils.book_append_sheet(
-      libro,
-      hojaProductos,
-      'Productos'
-    );
-
-
-    const nombreArchivo =
-      `reporte-ventas-${this.fechaDesde}-${this.fechaHasta}.xlsx`;
-
-
-    XLSX.writeFile(
-      libro,
-      nombreArchivo
-    );
-
-  }
-
-
-  // ==========================================
-  // EXPORTAR PDF
-  // ==========================================
-
-  exportarPDF(): void {
-
-    if (
-      this.ventasFiltradas.length === 0
-    ) {
-      return;
-    }
-
-
-    const doc =
-      new jsPDF();
-
-
-    const titulo =
-      'FERRE CENTRO';
-
-
-    const subtitulo =
-      'Reporte de ventas';
-
-
-    // ========================================
-    // ENCABEZADO
-    // ========================================
-
-    doc.setFontSize(20);
-
-    doc.setFont('helvetica', 'bold');
-
-    doc.text(
-      titulo,
-      14,
-      18
-    );
-
-
-    doc.setFontSize(14);
-
-    doc.setFont('helvetica', 'normal');
-
-    doc.text(
-      subtitulo,
-      14,
-      27
-    );
-
-
-    doc.setFontSize(9);
-
-    doc.text(
-      `Periodo: ${this.formatearFechaTexto(this.fechaDesde)} - ${this.formatearFechaTexto(this.fechaHasta)}`,
-      14,
-      35
-    );
-
-
-    // ========================================
-    // RESUMEN
-    // ========================================
-
-    autoTable(
-      doc,
-      {
-        startY: 43,
-
-        head: [
-          [
-            'Concepto',
-            'Valor'
-          ]
-        ],
-
-        body: [
-
-          [
-            'Total de ventas',
-            this.totalVentas.toString()
-          ],
-
-          [
-            'Ventas completadas',
-            this.ventasCompletadas.toString()
-          ],
-
-          [
-            'Ventas canceladas',
-            this.ventasCanceladas.toString()
-          ],
-
-          [
-            'Subtotal vendido',
-            this.formatearMoneda(
-              this.totalSubtotal
-            )
-          ],
-
-          [
-            'Impuestos',
-            this.formatearMoneda(
-              this.totalImpuesto
-            )
-          ],
-
-          [
-            'Total vendido',
-            this.formatearMoneda(
-              this.totalVendido
-            )
-          ]
-
-        ],
-
-        theme: 'grid',
-
-        styles: {
-          fontSize: 9
         }
 
-      }
-    );
+      </div>
+
+    </div>
 
 
-    // ========================================
-    // MÉTODOS DE PAGO
-    // ========================================
 
-    const yMetodos =
-      (
-        doc as any
-      ).lastAutoTable.finalY + 10;
+    <!-- ======================================= -->
+    <!-- PRODUCTOS -->
+    <!-- ======================================= -->
 
+    <div class="reporte-card productos-card">
 
-    doc.setFontSize(13);
+      <div class="card-header">
 
-    doc.setFont(
-      'helvetica',
-      'bold'
-    );
+        <h2>
+          Productos más vendidos
+        </h2>
 
-    doc.text(
-      'Métodos de pago',
-      14,
-      yMetodos
-    );
+        <p>
+          Los productos con mayor cantidad de unidades vendidas.
+        </p>
+
+      </div>
 
 
-    autoTable(
-      doc,
-      {
+      @if (productos.length > 0) {
 
-        startY:
-          yMetodos + 5,
+        @for (
+          producto of productos;
+          track producto.nombre;
+          let i = $index
+        ) {
 
-        head: [
-          [
-            'Método',
-            'Ventas',
-            'Total'
-          ]
-        ],
+          <div class="producto-item">
 
-        body:
-          this.metodosPago.map(
-            metodo => [
+            <div class="producto-posicion">
 
-              metodo.nombre,
+              {{ i + 1 }}
 
-              metodo.cantidad.toString(),
+            </div>
 
-              this.formatearMoneda(
-                metodo.total
-              )
 
-            ]
-          ),
+            <div class="producto-info">
 
-        theme: 'grid',
+              <strong>
+                {{ producto.nombre }}
+              </strong>
 
-        styles: {
-          fontSize: 9
+              <small>
+                {{ producto.cantidad }}
+                unidad(es)
+              </small>
+
+            </div>
+
+
+            <div class="producto-total">
+
+              {{ formatearMoneda(producto.total) }}
+
+            </div>
+
+          </div>
+
         }
 
-      }
-    );
+      } @else {
 
-
-    // ========================================
-    // PRODUCTOS
-    // ========================================
-
-    let yProductos =
-      (
-        doc as any
-      ).lastAutoTable.finalY + 10;
-
-
-    if (
-      yProductos > 250
-    ) {
-
-      doc.addPage();
-
-      yProductos = 20;
-
-    }
-
-
-    doc.setFontSize(13);
-
-    doc.setFont(
-      'helvetica',
-      'bold'
-    );
-
-    doc.text(
-      'Productos más vendidos',
-      14,
-      yProductos
-    );
-
-
-    autoTable(
-      doc,
-      {
-
-        startY:
-          yProductos + 5,
-
-        head: [
-          [
-            '#',
-            'Producto',
-            'Unidades',
-            'Total'
-          ]
-        ],
-
-        body:
-          this.productos.map(
-            (producto, index) => [
-
-              (index + 1).toString(),
-
-              producto.nombre,
-
-              producto.cantidad.toString(),
-
-              this.formatearMoneda(
-                producto.total
-              )
-
-            ]
-          ),
-
-        theme: 'grid',
-
-        styles: {
-          fontSize: 9
-        }
+        <div class="sin-datos">
+          No hay productos vendidos en este periodo.
+        </div>
 
       }
-    );
+
+    </div>
 
 
-    // ========================================
-    // PIE
-    // ========================================
 
-    const paginas =
-      doc.getNumberOfPages();
+    <!-- ======================================= -->
+    <!-- VENTAS DETALLADAS -->
+    <!-- ======================================= -->
 
+    <div class="reporte-card ventas-card">
 
-    for (
-      let i = 1;
-      i <= paginas;
-      i++
-    ) {
+      <div class="card-header">
 
-      doc.setPage(i);
+        <h2>
+          Ventas del periodo
+        </h2>
 
-      doc.setFontSize(8);
+        <p>
+          Detalle de las ventas encontradas.
+        </p>
 
-      doc.setFont(
-        'helvetica',
-        'normal'
-      );
-
-      doc.text(
-        `Página ${i} de ${paginas}`,
-        14,
-        290
-      );
-
-    }
+      </div>
 
 
-    const nombreArchivo =
-      `reporte-ventas-${this.fechaDesde}-${this.fechaHasta}.pdf`;
+      @if (ventasFiltradas.length > 0) {
+
+        <div class="tabla-container">
+
+          <table>
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Folio
+                </th>
+
+                <th>
+                  Fecha
+                </th>
+
+                <th>
+                  Vendedor
+                </th>
+
+                <th>
+                  Método
+                </th>
+
+                <th>
+                  Estado
+                </th>
+
+                <th>
+                  Total
+                </th>
+
+              </tr>
+
+            </thead>
 
 
-    doc.save(
-      nombreArchivo
-    );
+            <tbody>
+
+              @for (
+                venta of ventasFiltradas;
+                track venta.id
+              ) {
+
+                <tr>
+
+                  <td>
+                    <strong>
+                      {{ venta.folio }}
+                    </strong>
+                  </td>
+
+                  <td>
+                    {{ formatearFecha(venta.fechaCreacion) }}
+                  </td>
+
+                  <td>
+                    {{
+                      venta.usuarioNombre ||
+                      venta.username ||
+                      'Sin vendedor'
+                    }}
+                  </td>
+
+                  <td>
+                    {{
+                      formatearMetodoPago(
+                        venta.metodoPago
+                      )
+                    }}
+                  </td>
+
+                  <td>
+
+                    <span
+                      class="estado"
+                      [class.completada]="
+                        venta.estado === 'COMPLETADA'
+                      "
+                      [class.cancelada]="
+                        venta.estado === 'CANCELADA'
+                      "
+                    >
+
+                      {{
+                        venta.estado === 'COMPLETADA'
+                          ? 'Completada'
+                          : 'Cancelada'
+                      }}
+
+                    </span>
+
+                  </td>
+
+                  <td class="total-columna">
+
+                    {{
+                      formatearMoneda(
+                        venta.total
+                      )
+                    }}
+
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      } @else {
+
+        <div class="sin-ventas">
+
+          <div>
+            📊
+          </div>
+
+          <h3>
+            No hay ventas en este periodo
+          </h3>
+
+          <p>
+            Cambia las fechas para consultar otro periodo.
+          </p>
+
+        </div>
+
+      }
+
+    </div>
 
   }
 
-
-  // ==========================================
-  // FECHA PARA MOSTRAR
-  // ==========================================
-
-  formatearFecha(
-    fecha: string
-  ): string {
-
-    if (!fecha) {
-      return '';
-    }
-
-
-    const fechaObj =
-      new Date(fecha);
-
-
-    return fechaObj.toLocaleDateString(
-      'es-MX'
-    );
-
-  }
-
-
-  // ==========================================
-  // FECHA TEXTO PDF
-  // ==========================================
-
-  formatearFechaTexto(
-    fecha: string
-  ): string {
-
-    if (!fecha) {
-      return '';
-    }
-
-
-    const partes =
-      fecha.split('-');
-
-
-    if (
-      partes.length !== 3
-    ) {
-      return fecha;
-    }
-
-
-    return `${partes[2]}/${partes[1]}/${partes[0]}`;
-
-  }
-
-}
+</section>
