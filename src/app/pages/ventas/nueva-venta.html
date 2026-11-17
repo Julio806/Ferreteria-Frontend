@@ -47,9 +47,7 @@
       </div>
 
 
-      <!-- ======================================
-           BUSCADOR
-           ====================================== -->
+      <!-- BUSCADOR -->
 
       <div class="buscador-productos">
 
@@ -67,9 +65,7 @@
       </div>
 
 
-      <!-- ======================================
-           CARGANDO
-           ====================================== -->
+      <!-- CARGANDO -->
 
       @if (cargando) {
 
@@ -86,9 +82,7 @@
       }
 
 
-      <!-- ======================================
-           ERROR
-           ====================================== -->
+      <!-- ERROR -->
 
       @if (!cargando && error) {
 
@@ -101,9 +95,7 @@
       }
 
 
-      <!-- ======================================
-           CATÁLOGO
-           ====================================== -->
+      <!-- CATÁLOGO -->
 
       @if (!cargando && !error) {
 
@@ -211,9 +203,7 @@
           }
 
 
-          <!-- ==================================
-               SIN RESULTADOS
-               ================================== -->
+          <!-- SIN RESULTADOS -->
 
           @if (productosFiltrados.length === 0) {
 
@@ -251,9 +241,7 @@
     <aside class="carrito-section">
 
 
-      <!-- ======================================
-           HEADER CARRITO
-           ====================================== -->
+      <!-- HEADER CARRITO -->
 
       <div class="carrito-header">
 
@@ -286,9 +274,7 @@
       </div>
 
 
-      <!-- ======================================
-           CARRITO VACÍO
-           ====================================== -->
+      <!-- CARRITO VACÍO -->
 
       @if (carrito.length === 0) {
 
@@ -312,9 +298,7 @@
       }
 
 
-      <!-- ======================================
-           PRODUCTOS DEL CARRITO
-           ====================================== -->
+      <!-- PRODUCTOS DEL CARRITO -->
 
       @if (carrito.length > 0) {
 
@@ -405,9 +389,7 @@
 
 
 
-      <!-- ======================================
-           MÉTODO DE PAGO
-           ====================================== -->
+      <!-- MÉTODO DE PAGO -->
 
       <div class="metodo-pago-section">
 
@@ -476,9 +458,7 @@
 
 
 
-      <!-- ======================================
-           RESUMEN
-           ====================================== -->
+      <!-- RESUMEN -->
 
       <div class="resumen-venta">
 
@@ -526,9 +506,7 @@
 
 
 
-      <!-- ======================================
-           FINALIZAR
-           ====================================== -->
+      <!-- FINALIZAR -->
 
       <button
         type="button"
@@ -558,6 +536,198 @@
 
     </aside>
 
+
   </div>
+
+
+
+  <!-- =====================================================
+       MODAL - VENTA REALIZADA
+       ===================================================== -->
+
+  
+
+@if (mostrarTicket && ventaRealizada) {
+
+  <div class="ticket-overlay" (click)="cerrarTicket()">
+
+    <div class="ticket-modal" (click)="$event.stopPropagation()">
+
+      <!-- COMPROBANTE -->
+      <div class="ticket-vista">
+
+        <!-- LOGOTIPO -->
+        <div class="ticket-encabezado">
+
+          <div class="ticket-logo">
+            <svg viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2.5"
+                 stroke-linecap="round"
+                 stroke-linejoin="round">
+              <path d="m14.5 6.5 3-3 3 3-3 3"/>
+              <path d="m3 21 9-9"/>
+              <path d="m14 4 6 6"/>
+              <path d="m5 19 4-4"/>
+              <path d="m14 14 6 6"/>
+              <path d="m16 12 4-4"/>
+              <path d="m3 21 4-1 2-2-3-3-2 2z"/>
+            </svg>
+          </div>
+
+          <h2>FERRETERÍA</h2>
+          <p class="ticket-subtitulo">COMPROBANTE DE VENTA</p>
+
+        </div>
+
+        <div class="ticket-separador"></div>
+
+        <!-- INFORMACIÓN -->
+        <div class="ticket-informacion">
+
+          <p>
+            <strong>Folio:</strong>
+            <span>{{ ventaRealizada.folio }}</span>
+          </p>
+
+          <p>
+            <strong>Fecha:</strong>
+            <span>{{ formatearFecha(ventaRealizada.fechaCreacion) }}</span>
+          </p>
+
+          <p>
+            <strong>Vendedor:</strong>
+            <span>
+              {{ ventaRealizada.usuarioNombre || ventaRealizada.username || 'N/A' }}
+            </span>
+          </p>
+
+          <p>
+            <strong>Estado:</strong>
+            <span>Completada</span>
+          </p>
+
+        </div>
+
+        <div class="ticket-separador"></div>
+
+        <!-- PRODUCTOS -->
+        <div class="ticket-productos">
+
+          <div class="ticket-columnas">
+            <strong>PRODUCTO</strong>
+            <strong>IMPORTE</strong>
+          </div>
+
+          @for (item of carrito; track item.producto.id) {
+
+            <div class="ticket-item">
+
+              <strong class="ticket-producto-nombre">
+                {{ item.producto.nombre }}
+              </strong>
+
+              <div class="ticket-item-detalle">
+                <span>
+                  {{ item.cantidad }} ×
+                  {{ formatearDinero(item.producto.precioVenta) }}
+                </span>
+
+                <strong>
+                  {{ formatearDinero(item.subtotal) }}
+                </strong>
+              </div>
+
+            </div>
+
+          }
+
+        </div>
+
+        <div class="ticket-separador"></div>
+
+        <!-- TOTALES -->
+        <div class="ticket-totales">
+
+          <div>
+            <span>Subtotal</span>
+            <strong>
+              {{ formatearDinero(ventaRealizada.subtotal ?? subtotal) }}
+            </strong>
+          </div>
+
+          <div>
+            <span>IVA</span>
+            <strong>
+              {{ formatearDinero(ventaRealizada.impuesto ?? impuesto) }}
+            </strong>
+          </div>
+
+          <div class="ticket-total-final">
+            <span>TOTAL</span>
+            <strong>
+              {{ formatearDinero(ventaRealizada.total ?? total) }}
+            </strong>
+          </div>
+
+        </div>
+
+        <!-- MÉTODO DE PAGO -->
+        <div class="ticket-metodo-pago">
+          Método de pago:
+          <strong>{{ ventaRealizada.metodoPago || metodoPago }}</strong>
+        </div>
+
+        <!-- AGRADECIMIENTO -->
+        <div class="ticket-pie">
+          <strong>¡Gracias por su compra!</strong>
+          <p>Conserve este comprobante.</p>
+        </div>
+
+      </div>
+
+      <!-- BOTONES -->
+
+<div class="ticket-acciones">
+
+  <button
+    type="button"
+    class="ticket-btn-cerrar"
+    (click)="cerrarTicket()">
+    Cerrar
+  </button>
+
+  <button
+    type="button"
+    class="ticket-btn-nueva"
+    (click)="nuevaVenta()">
+    Nueva venta
+  </button>
+
+<button
+  type="button"
+  class="ticket-btn-pdf"
+  (click)="generarPdfTicket()">
+  Generar PDF
+</button>
+
+  <button
+    type="button"
+    class="ticket-btn-listo"
+    (click)="imprimirTicket()">
+    ▣ Imprimir ticket
+  </button>
+
+</div>
+
+
+    </div>
+
+  </div>
+
+}
+
+
 
 </div>
