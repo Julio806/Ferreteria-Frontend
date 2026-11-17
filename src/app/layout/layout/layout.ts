@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
 
+import { Component } from '@angular/core';
 import {
   Router,
   RouterLink,
@@ -8,6 +8,7 @@ import {
 } from '@angular/router';
 
 import { AuthService } from '../../core/services/auth.service';
+import { Header } from '../header/header';
 
 @Component({
   selector: 'app-layout',
@@ -15,67 +16,47 @@ import { AuthService } from '../../core/services/auth.service';
   imports: [
     RouterOutlet,
     RouterLink,
-    RouterLinkActive
+    RouterLinkActive,
+    Header
   ],
   templateUrl: './layout.html',
   styleUrl: './layout.css'
 })
 export class LayoutComponent {
 
-  // ==========================================
-  // INFORMACIÓN DEL USUARIO
-  // ==========================================
-
   username: string | null = null;
-
   rol: string | null = null;
-
-
-  // ==========================================
-  // CONSTRUCTOR
-  // ==========================================
 
   constructor(
     private router: Router,
     private authService: AuthService
   ) {
+    this.username = this.authService.getUsername();
+    this.rol = this.authService.getRole();
 
-    this.username =
-      this.authService.getUsername();
-
-    this.rol =
-      this.authService.getRole();
-
+    console.log('USUARIO:', this.username);
+    console.log('ROL RECUPERADO:', this.rol);
+    console.log('¿ES ADMIN?:', this.isAdmin());
   }
-
-
-  // ==========================================
-  // INICIALIZAR
-  // ==========================================
 
   get inicialUsuario(): string {
-
-    if (!this.username) {
-      return 'U';
-    }
-
     return this.username
-      .charAt(0)
-      .toUpperCase();
-
+      ? this.username.charAt(0).toUpperCase()
+      : 'U';
   }
 
+  isAdmin(): boolean {
+    const rolNormalizado = this.rol
+      ?.trim()
+      .toUpperCase()
+      .replace(/^ROLE_/, '');
 
-  // ==========================================
-  // CERRAR SESIÓN
-  // ==========================================
+    return rolNormalizado === 'ADMIN';
+  }
 
   logout(): void {
-
     this.authService.logout();
-
     this.router.navigate(['/login']);
-
   }
 
 }
