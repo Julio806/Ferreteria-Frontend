@@ -1,706 +1,540 @@
-<div class="dashboard">
 
-  <!-- ==========================================
-       ENCABEZADO
-       ========================================== -->
+<div class="bi-dashboard">
 
-  <div class="dashboard-header">
-
-    <div class="header-info">
-
-      <span class="section-label">
-        FERRE CENTRO
+  <!-- ENCABEZADO -->
+  <header class="bi-header">
+    <div>
+      <span class="eyebrow">
+        FERRETERA GUM / INTELIGENCIA DE NEGOCIOS
       </span>
 
-      <h1>
-        Dashboard
-      </h1>
+      <h1>Panel de inventario</h1>
 
       <p>
-        Resumen general de la ferretería
+        Monitoreo, análisis y pronóstico de existencias
       </p>
-
     </div>
 
     <button
-      type="button"
       class="refresh-button"
+      type="button"
       (click)="obtenerDashboard()"
-      [disabled]="cargando"
-    >
+      [disabled]="cargando">
 
-      <!-- ICONO ACTUALIZAR -->
+      <span [class.spinning]="cargando">↻</span>
 
-      <svg
-        class="refresh-icon"
-        [class.spinning]="cargando"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-
-        <path d="M20 11a8.1 8.1 0 0 0-15.5-2M4 5v4h4"></path>
-
-        <path d="M4 13a8.1 8.1 0 0 0 15.5 2M20 19v-4h-4"></path>
-
-      </svg>
-
-      {{ cargando ? 'Actualizando...' : 'Actualizar' }}
-
+      {{ cargando ? 'Actualizando...' : 'Actualizar datos' }}
     </button>
+  </header>
 
-  </div>
+  <!-- ACCIONES RÁPIDAS -->
+  <section
+  class="quick-access"
+  [class.quick-access-vendedor]="!isAdmin()">
 
+    <a routerLink="/productos" class="quick-card">
+      <span class="quick-icon orange">▦</span>
 
-  <!-- ==========================================
-       CARGANDO
-       ========================================== -->
+      <div>
+        <strong>Inventario</strong>
+        <small>Administrar inventario</small>
+      </div>
 
+      <span class="quick-arrow">→</span>
+    </a>
+
+    <a routerLink="/ventas/nueva" class="quick-card">
+      <span class="quick-icon blue">＄</span>
+
+      <div>
+        <strong>Ventas</strong>
+        <small>Consultar operaciones</small>
+      </div>
+
+      <span class="quick-arrow">→</span>
+    </a>
+
+@if (isAdmin()) {
+
+  <!-- ABASTECIMIENTO: EXCLUSIVO ADMIN -->
+  <a routerLink="/compras/nueva" class="quick-card">
+
+    <span class="quick-icon purple">▣</span>
+
+    <div>
+      <strong>Abastecimiento</strong>
+      <small>Consultar abastecimiento</small>
+    </div>
+
+    <span class="quick-arrow">→</span>
+
+  </a>
+
+}
+
+  </section>
+
+  <!-- ESTADO DE CARGA -->
   @if (cargando) {
+    <div class="state-panel">
 
-    <div class="state-card">
+      <div class="spinner"></div>
 
-      <div class="loading-spinner"></div>
-
-      <h3>
-        Cargando información
-      </h3>
+      <h3>Analizando información...</h3>
 
       <p>
-        Estamos obteniendo los datos del sistema...
+        Consultando los datos del inventario.
       </p>
 
     </div>
-
   }
 
+  <!-- ESTADO DE ERROR -->
+  @if (!cargando && error) {
+    <div class="state-panel">
 
-  <!-- ==========================================
-       ERROR
-       ========================================== -->
-
-  @if (error) {
-
-    <div class="state-card error-card">
-
-      <div class="state-icon error-icon">
-
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-
-          <path
-            d="M10.3 2.9 1.8 17a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 2.9a2 2 0 0 0-3.4 0Z"
-          ></path>
-
-          <line
-            x1="12"
-            y1="9"
-            x2="12"
-            y2="13"
-          ></line>
-
-          <line
-            x1="12"
-            y1="17"
-            x2="12.01"
-            y2="17"
-          ></line>
-
-        </svg>
-
-      </div>
-
-      <h3>
-        No se pudo cargar el dashboard
-      </h3>
+      <h3>No fue posible cargar el dashboard</h3>
 
       <p>
-        Ocurrió un problema al obtener la información.
+        Comprueba la conexión con el servidor.
       </p>
 
       <button
+        class="primary-button"
         type="button"
-        class="retry-button"
-        (click)="obtenerDashboard()"
-      >
-        Intentar nuevamente
+        (click)="obtenerDashboard()">
+        Reintentar
       </button>
 
     </div>
-
   }
 
-
-  <!-- ==========================================
-       DASHBOARD
-       ========================================== -->
-
+  <!-- CONTENIDO PRINCIPAL -->
   @if (!cargando && !error && dashboard) {
 
-    <!-- ========================================
-         TARJETAS PRINCIPALES
-         ======================================== -->
+    <!-- INDICADORES KPI -->
+    <section class="kpi-grid">
 
-    <div class="stats-grid">
+      <!-- TOTAL DE PRODUCTOS -->
+      <article class="kpi-card">
 
-
-      <!-- ======================================
-           VENTAS DEL DÍA
-           ====================================== -->
-
-      <div class="stat-card sales-card">
-
-        <div class="stat-icon">
-
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.8"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-
-            <line
-              x1="12"
-              y1="1"
-              x2="12"
-              y2="23"
-            ></line>
-
-            <path
-              d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H7"
-            ></path>
-
-          </svg>
-
+        <div class="kpi-top">
+          <span>Total de productos</span>
+          <span class="kpi-icon orange">▦</span>
         </div>
 
-        <div class="stat-info">
+        <strong>{{ productos.length }}</strong>
 
-          <span>
-            Ventas del día
+        <small>Productos registrados</small>
+
+      </article>
+
+      <!-- EXISTENCIAS -->
+      <article class="kpi-card">
+
+        <div class="kpi-top">
+          <span>Existencias totales</span>
+          <span class="kpi-icon blue">▤</span>
+        </div>
+
+        <strong>{{ totalUnidades | number }}</strong>
+
+        <small>Unidades disponibles</small>
+
+      </article>
+
+      <!-- COBERTURA -->
+      <article class="kpi-card">
+
+        <div class="kpi-top">
+          <span>Cobertura estimada</span>
+          <span class="kpi-icon purple">◷</span>
+        </div>
+
+        <strong>{{ coberturaPromedio }}</strong>
+
+        <small>Días promedio estimados</small>
+
+      </article>
+
+      <!-- REORDEN -->
+      <article class="kpi-card">
+
+        <div class="kpi-top">
+          <span>Reorden requerido</span>
+          <span class="kpi-icon red">⚠</span>
+        </div>
+
+        <strong>
+          {{ porcentajeReposicion | number:'1.1-1' }}%
+        </strong>
+
+        <small>
+          {{ productosPorReponer }} productos por revisar
+        </small>
+
+      </article>
+
+      <!-- PRODUCTOS ESTABLES -->
+      <article class="kpi-card">
+
+        <div class="kpi-top">
+          <span>Productos estables</span>
+          <span class="kpi-icon green">✓</span>
+        </div>
+
+        <strong>{{ productosEstables }}</strong>
+
+        <small>Por encima del stock mínimo</small>
+
+      </article>
+
+    </section>
+
+    <!-- GRÁFICAS -->
+    <section class="charts-grid">
+
+      <!-- STOCK POR PRODUCTO -->
+      <article class="bi-card chart-card">
+
+        <div class="panel-heading">
+          <div>
+            <span class="section-kicker">
+              EXISTENCIAS
+            </span>
+
+            <h2>Stock por producto</h2>
+
+            <p>
+              Productos con mayor cantidad disponible
+            </p>
+          </div>
+
+          <span class="panel-icon">▥</span>
+        </div>
+
+        <div class="chart-container">
+          <canvas id="graficaStock"></canvas>
+        </div>
+
+      </article>
+
+      <!-- DISTRIBUCIÓN DEL INVENTARIO -->
+      <article class="bi-card chart-card">
+
+        <div class="panel-heading">
+          <div>
+            <span class="section-kicker">
+              ESTADO GENERAL
+            </span>
+
+            <h2>Distribución del inventario</h2>
+
+            <p>
+              Clasificación según el stock mínimo
+            </p>
+          </div>
+
+          <span class="panel-icon">◉</span>
+        </div>
+
+        <div class="chart-container donut-container">
+          <canvas id="graficaDistribucion"></canvas>
+        </div>
+
+      </article>
+
+      <!-- UNIDADES VENDIDAS -->
+      <article class="bi-card chart-card">
+
+        <div class="panel-heading">
+          <div>
+            <span class="section-kicker">
+              COMPORTAMIENTO
+            </span>
+
+            <h2>Unidades vendidas</h2>
+
+            <p>
+              Ventas por producto durante los últimos 30 días
+            </p>
+          </div>
+
+          <span class="panel-icon blue-icon">↗</span>
+        </div>
+
+        <div class="chart-container">
+          <canvas id="graficaVentas"></canvas>
+        </div>
+
+      </article>
+
+      <!-- PRONÓSTICO DE AGOTAMIENTO -->
+      <article class="bi-card chart-card">
+
+        <div class="panel-heading">
+          <div>
+            <span class="section-kicker">
+              ANÁLISIS PREDICTIVO
+            </span>
+
+            <h2>Pronóstico de agotamiento</h2>
+
+            <p>
+              Días estimados de disponibilidad por producto
+            </p>
+          </div>
+
+          <span class="panel-icon">◷</span>
+        </div>
+
+        <div class="chart-container">
+          <canvas id="graficaPronostico"></canvas>
+        </div>
+
+      </article>
+
+    </section>
+
+    <!-- ALERTAS DE INVENTARIO -->
+    <section class="bi-card alerts-analysis">
+
+      <div class="panel-heading">
+        <div>
+          <span class="section-kicker">
+            ATENCIÓN
           </span>
 
-          <strong>
-            {{ dashboard.ventasDelDia | currency:'MXN':'symbol':'1.2-2' }}
-          </strong>
+          <h2>Alertas de inventario</h2>
 
-          <small>
-            Ingresos registrados hoy
-          </small>
+          <p>
+            Productos que requieren seguimiento
+          </p>
+        </div>
+
+        <span class="panel-icon alert-panel-icon">!</span>
+      </div>
+
+      <!-- RESUMEN DE ALERTAS -->
+      <div class="alert-summary">
+
+        <div class="alert-number">
+
+          <strong>{{ productosAlerta.length }}</strong>
+
+          <span>
+            Productos por reponer o revisar
+          </span>
 
         </div>
+
+        <a routerLink="/productos">
+          Ir al inventario →
+        </a>
 
       </div>
 
+      <!-- LISTA DE PRODUCTOS CON ALERTAS -->
+      @for (
+        producto of productosAlerta;
+        track producto.productoId
+      ) {
 
-      <!-- ======================================
-           PRODUCTOS
-           ====================================== -->
+        <div class="alert-product">
 
-      <div class="stat-card products-card">
+          <div class="alert-product-info">
 
-        <div class="stat-icon">
+            <strong>{{ producto.nombre }}</strong>
 
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.8"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
+            <small>
+              Código: {{ producto.codigo }}
+            </small>
 
-            <path d="m21 16-9 5-9-5"></path>
+          </div>
 
-            <path d="m3 8 9 5 9-5"></path>
-
-            <path d="m3 8 9-5 9 5"></path>
-
-            <path d="M12 13v8"></path>
-
-          </svg>
-
-        </div>
-
-        <div class="stat-info">
-
-          <span>
-            Total productos
+          <span [ngClass]="claseEstado(producto)">
+            {{ textoEstado(producto) }}
           </span>
 
-          <strong>
-            {{ dashboard.totalProductos }}
-          </strong>
-
-          <small>
-            Productos registrados
-          </small>
-
         </div>
+
+      }
+
+      <!-- SIN ALERTAS -->
+      @if (productosAlerta.length === 0) {
+
+        <div class="all-clear">
+          ✓ No hay productos que requieran reposición.
+        </div>
+
+      }
+
+    </section>
+
+    <!-- TABLA DE PRONÓSTICO -->
+    <section class="bi-card inventory-section">
+
+      <!-- ENCABEZADO DE TABLA -->
+      <div class="panel-heading inventory-heading">
+
+        <div>
+          <span class="section-kicker">
+            DETALLE DEL INVENTARIO
+          </span>
+
+          <h2>Pronóstico de inventario</h2>
+
+          <p>
+            Estimación basada en el comportamiento de ventas
+            de los últimos 30 días
+          </p>
+        </div>
+
+        <a
+          routerLink="/productos"
+          class="outline-link">
+          Administrar productos →
+        </a>
 
       </div>
 
+      <!-- RESUMEN DE PRODUCTOS -->
+      <div class="table-summary">
 
-      <!-- ======================================
-           COMPRAS
-           ====================================== -->
+        <span>
+          <strong>{{ productos.length }}</strong>
+          productos registrados
+        </span>
 
-      <div class="stat-card purchases-card">
-
-        <div class="stat-icon">
-
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.8"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-
-            <circle
-              cx="9"
-              cy="20"
-              r="1"
-            ></circle>
-
-            <circle
-              cx="19"
-              cy="20"
-              r="1"
-            ></circle>
-
-            <path
-              d="M3 4h2l2.4 11.3a2 2 0 0 0 2 1.7h7.8a2 2 0 0 0 2-1.6L21 8H6"
-            ></path>
-
-          </svg>
-
-        </div>
-
-        <div class="stat-info">
-
-          <span>
-            Compras del día
-          </span>
-
-          <strong>
-            {{ dashboard.comprasDelDia | currency:'MXN':'symbol':'1.2-2' }}
-          </strong>
-
-          <small>
-            Inversión registrada hoy
-          </small>
-
-        </div>
+        <span class="live-indicator">
+          ● Datos del sistema
+        </span>
 
       </div>
 
+      <!-- TABLA -->
+      <div class="table-wrapper">
 
-      <!-- ======================================
-           STOCK BAJO
-           ====================================== -->
+        <table class="inventory-table">
 
-      <div class="stat-card stock-card">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Stock actual</th>
+              <th>Stock mínimo</th>
+              <th>Vendidas (30 días)</th>
+              <th>Promedio diario</th>
+              <th>Días restantes</th>
+              <th>Agotamiento estimado</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
 
-        <div class="stat-icon">
+          <tbody>
 
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.8"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
+            <!-- TODOS LOS PRODUCTOS -->
+            @for (
+              producto of productos;
+              track trackProducto($index, producto)
+            ) {
 
-            <path
-              d="M10.3 2.9 1.8 17a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 2.9a2 2 0 0 0-3.4 0Z"
-            ></path>
+              <tr>
 
-            <line
-              x1="12"
-              y1="9"
-              x2="12"
-              y2="13"
-            ></line>
+                <!-- PRODUCTO -->
+                <td>
+                  <div class="product-cell">
 
-            <line
-              x1="12"
-              y1="17"
-              x2="12.01"
-              y2="17"
-            ></line>
+                    <strong>
+                      {{ producto.nombre }}
+                    </strong>
 
-          </svg>
+                    <small>
+                      {{ producto.codigo }}
+                    </small>
 
-        </div>
+                  </div>
+                </td>
 
-        <div class="stat-info">
+                <!-- STOCK ACTUAL -->
+                <td>
+                  {{ producto.stockActual }}
+                </td>
 
-          <span>
-            Stock bajo
-          </span>
+                <!-- STOCK MÍNIMO -->
+                <td>
+                  {{ producto.stockMinimo }}
+                </td>
 
-          <strong>
-            {{ dashboard.productosStockBajo }}
-          </strong>
+                <!-- VENTAS -->
+                <td>
+                  {{ producto.unidadesVendidasUltimos30Dias }}
+                </td>
 
-          <small>
-            Requieren atención
-          </small>
+                <!-- PROMEDIO DIARIO -->
+                <td>
+                  {{ producto.promedioVentaDiaria | number:'1.2-2' }}
+                </td>
 
-        </div>
+                <!-- DÍAS RESTANTES -->
+                <td>
+                  {{ producto.diasRestantes }}
+                </td>
+
+                <!-- FECHA ESTIMADA -->
+                <td>
+                  {{ producto.fechaProbableAgotamiento }}
+                </td>
+
+                <!-- ESTADO -->
+                <td>
+
+                  <span
+                    class="status-pill"
+                    [ngClass]="claseEstado(producto)">
+
+                    {{ textoEstado(producto) }}
+
+                  </span>
+
+                </td>
+
+              </tr>
+
+            }
+
+            <!-- INVENTARIO VACÍO -->
+            @if (productos.length === 0) {
+
+              <tr>
+
+                <td colspan="8" class="no-results">
+                  No hay productos registrados en el inventario.
+                </td>
+
+              </tr>
+
+            }
+
+          </tbody>
+
+        </table>
 
       </div>
 
-    </div>
+      <!-- PIE DE TABLA -->
+      <footer class="table-footer">
 
+        <span>
+          Los pronósticos son estimaciones basadas en ventas recientes.
+        </span>
 
-    <!-- ========================================
-         PANELES INFERIORES
-         ======================================== -->
+        <a routerLink="/productos">
+          Consultar inventario completo →
+        </a>
 
-    <div class="dashboard-grid">
+      </footer>
 
-
-      <!-- ======================================
-           RESUMEN DE VENTAS
-           ====================================== -->
-
-      <section class="dashboard-card">
-
-        <div class="card-header">
-
-          <div class="card-title">
-
-            <div class="card-icon sales-icon">
-
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-
-                <line
-                  x1="12"
-                  y1="1"
-                  x2="12"
-                  y2="23"
-                ></line>
-
-                <path
-                  d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H7"
-                ></path>
-
-              </svg>
-
-            </div>
-
-            <div>
-
-              <h2>
-                Resumen de ventas
-              </h2>
-
-              <span>
-                Información general de ventas
-              </span>
-
-            </div>
-
-          </div>
-
-
-          <a
-            routerLink="/ventas"
-            class="card-link"
-          >
-
-            Ver ventas
-
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-
-              <line
-                x1="5"
-                y1="12"
-                x2="19"
-                y2="12"
-              ></line>
-
-              <polyline
-                points="12 5 19 12 12 19"
-              ></polyline>
-
-            </svg>
-
-          </a>
-
-        </div>
-
-
-        <div class="summary-content">
-
-
-          <!-- TOTAL VENTAS -->
-
-          <div class="summary-item">
-
-            <div>
-
-              <strong class="summary-title">
-                Total de ventas
-              </strong>
-
-              <span>
-                Ventas registradas
-              </span>
-
-            </div>
-
-            <strong class="summary-value">
-              {{ dashboard.totalVentas }}
-            </strong>
-
-          </div>
-
-
-          <!-- VENTAS DEL DÍA -->
-
-          <div class="summary-item">
-
-            <div>
-
-              <strong class="summary-title">
-                Ventas del día
-              </strong>
-
-              <span>
-                Ingresos de hoy
-              </span>
-
-            </div>
-
-            <strong class="summary-value money">
-              {{ dashboard.ventasDelDia | currency:'MXN':'symbol':'1.2-2' }}
-            </strong>
-
-          </div>
-
-
-          <!-- VENDEDOR -->
-
-          @if (dashboard.rol === 'VENDEDOR') {
-
-            <div class="summary-item">
-
-              <div>
-
-                <strong class="summary-title">
-                  Total vendido por ti
-                </strong>
-
-                <span>
-                  Ventas realizadas durante el día
-                </span>
-
-              </div>
-
-              <strong class="summary-value money">
-                {{ dashboard.totalVendidoDelDia | currency:'MXN':'symbol':'1.2-2' }}
-              </strong>
-
-            </div>
-
-          }
-
-        </div>
-
-      </section>
-
-
-      <!-- ======================================
-           INVENTARIO
-           ====================================== -->
-
-      <section class="dashboard-card">
-
-        <div class="card-header">
-
-          <div class="card-title">
-
-            <div class="card-icon products-icon">
-
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-
-                <path d="m21 16-9 5-9-5"></path>
-
-                <path d="m3 8 9 5 9-5"></path>
-
-                <path d="m3 8 9-5 9 5"></path>
-
-              </svg>
-
-            </div>
-
-            <div>
-
-              <h2>
-                Inventario
-              </h2>
-
-              <span>
-                Estado actual del inventario
-              </span>
-
-            </div>
-
-          </div>
-
-
-          <a
-            routerLink="/productos"
-            class="card-link"
-          >
-
-            Ver productos
-
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-
-              <line
-                x1="5"
-                y1="12"
-                x2="19"
-                y2="12"
-              ></line>
-
-              <polyline
-                points="12 5 19 12 12 19"
-              ></polyline>
-
-            </svg>
-
-          </a>
-
-        </div>
-
-
-        <div class="summary-content">
-
-
-          <!-- TOTAL PRODUCTOS -->
-
-          <div class="summary-item">
-
-            <div>
-
-              <strong class="summary-title">
-                Total de productos
-              </strong>
-
-              <span>
-                Productos registrados
-              </span>
-
-            </div>
-
-            <strong class="summary-value">
-              {{ dashboard.totalProductos }}
-            </strong>
-
-          </div>
-
-
-          <!-- STOCK BAJO -->
-
-          <div
-            class="low-stock-box"
-            [class.no-stock-warning]="dashboard.productosStockBajo === 0"
-          >
-
-            <div class="low-stock-icon">
-
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-
-                <path
-                  d="M10.3 2.9 1.8 17a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 2.9a2 2 0 0 0-3.4 0Z"
-                ></path>
-
-                <line
-                  x1="12"
-                  y1="9"
-                  x2="12"
-                  y2="13"
-                ></line>
-
-                <line
-                  x1="12"
-                  y1="17"
-                  x2="12.01"
-                  y2="17"
-                ></line>
-
-              </svg>
-
-            </div>
-
-            <div>
-
-              <strong>
-                {{ dashboard.productosStockBajo }}
-              </strong>
-
-              <span>
-                productos con stock bajo
-              </span>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-    </div>
+    </section>
 
   }
 
