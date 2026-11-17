@@ -1,13 +1,21 @@
+
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpParams } from '@angular/common/http';
 import { ApiService } from './api.service';
+
+
+// ==========================================
+// INTERFAZ PRODUCTO
+// ==========================================
 
 export interface Producto {
 
   id: number;
 
   codigo: string;
+
+  codigoBarras?: string | null;
 
   nombre: string;
 
@@ -32,6 +40,11 @@ export interface Producto {
   activo: boolean;
 
 }
+
+
+// ==========================================
+// SERVICIO DE PRODUCTOS
+// ==========================================
 
 @Injectable({
   providedIn: 'root'
@@ -83,7 +96,7 @@ export class ProductoService {
 
 
   // ==========================================
-  // OBTENER POR CÓDIGO
+  // OBTENER POR CÓDIGO INTERNO
   // ==========================================
 
   obtenerPorCodigo(codigo: string): Observable<Producto> {
@@ -114,23 +127,23 @@ export class ProductoService {
   // BUSCAR POR NOMBRE
   // ==========================================
 
-    buscarPorNombre(
-        nombre: string
-    ): Observable<Producto[]> {
+  buscarPorNombre(
+    nombre: string
+  ): Observable<Producto[]> {
 
-        const params = new HttpParams()
-            .set('nombre', nombre);
+    const params = new HttpParams()
+      .set('nombre', nombre);
 
-        return this.apiService.get<Producto[]>(
-            '/productos/buscar',
-            params
-        );
+    return this.apiService.get<Producto[]>(
+      '/productos/buscar',
+      params
+    );
 
-    }
+  }
 
 
   // ==========================================
-  // STOCK BAJO
+  // OBTENER PRODUCTOS CON STOCK BAJO
   // ==========================================
 
   obtenerStockBajo(): Observable<Producto[]> {
@@ -143,10 +156,12 @@ export class ProductoService {
 
 
   // ==========================================
-  // CREAR
+  // CREAR PRODUCTO
   // ==========================================
 
-  crear(producto: ProductoRequest): Observable<Producto> {
+  crear(
+    producto: ProductoRequest
+  ): Observable<Producto> {
 
     return this.apiService.post<Producto>(
       '/productos',
@@ -157,7 +172,7 @@ export class ProductoService {
 
 
   // ==========================================
-  // ACTUALIZAR
+  // ACTUALIZAR PRODUCTO
   // ==========================================
 
   actualizar(
@@ -208,10 +223,12 @@ export class ProductoService {
 
 
   // ==========================================
-  // ELIMINAR
+  // ELIMINAR PRODUCTO
   // ==========================================
 
-  eliminar(id: number): Observable<void> {
+  eliminar(
+    id: number
+  ): Observable<void> {
 
     return this.apiService.delete<void>(
       `/productos/${id}`
@@ -229,6 +246,8 @@ export class ProductoService {
 export interface ProductoRequest {
 
   codigo: string;
+
+  codigoBarras?: string | null;
 
   nombre: string;
 
