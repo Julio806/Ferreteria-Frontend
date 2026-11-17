@@ -1,9 +1,7 @@
+
 <aside class="sidebar">
 
-  <!-- ===================================== -->
   <!-- LOGO -->
-  <!-- ===================================== -->
-
   <div class="sidebar-brand">
 
     <div class="brand-icon">
@@ -17,11 +15,7 @@
 
   </div>
 
-
-  <!-- ===================================== -->
   <!-- USUARIO -->
-  <!-- ===================================== -->
-
   <div class="sidebar-user">
 
     <div class="user-avatar">
@@ -42,168 +36,113 @@
 
   </div>
 
-
-  <!-- ===================================== -->
   <!-- MENÚ -->
-  <!-- ===================================== -->
-
   <nav class="sidebar-menu">
 
     <div class="menu-title">
       PRINCIPAL
     </div>
 
-
-    <!-- DASHBOARD -->
-
+    <!-- DASHBOARD: ADMIN Y VENDEDOR -->
     <a
       routerLink="/dashboard"
       routerLinkActive="active"
       class="menu-item"
     >
-
       <span class="menu-icon">🏠</span>
-
-      <span>Dashboard</span>
-
+      <span>Dashboard BI</span>
     </a>
 
-
     <!-- PRODUCTOS -->
-
     <a
       routerLink="/productos"
       routerLinkActive="active"
       class="menu-item"
     >
-
       <span class="menu-icon">📦</span>
-
       <span>Productos</span>
-
     </a>
 
-
     <!-- CATEGORÍAS -->
-
     <a
       routerLink="/categorias"
       routerLinkActive="active"
       class="menu-item"
     >
-
       <span class="menu-icon">🏷️</span>
-
       <span>Categorías</span>
-
     </a>
 
-
     <!-- VENTAS -->
-
     <a
       routerLink="/ventas"
       routerLinkActive="active"
       class="menu-item"
     >
-
       <span class="menu-icon">🛒</span>
-
       <span>Ventas</span>
-
     </a>
 
-
-    <!-- COMPRAS -->
-
-    <a
-      routerLink="/compras"
-      routerLinkActive="active"
-      class="menu-item"
-    >
-
-      <span class="menu-icon">🛍️</span>
-
-      <span>Compras</span>
-
-    </a>
-    <!-- REPORTES -->
-
-<!-- REPORTES -->
-
-<a
-  routerLink="/reportes"
-  routerLinkActive="active"
-  class="menu-item"
->
-
-  <span class="menu-icon">📊</span>
-
-  <span>Reportes</span>
-
-</a>
-
-
-    <!-- ================================= -->
-    <!-- ADMINISTRACIÓN -->
-    <!-- ================================= -->
-
+    <!-- MÓDULOS EXCLUSIVOS DEL ADMINISTRADOR -->
     @if (isAdmin()) {
 
       <div class="menu-title">
         ADMINISTRACIÓN
       </div>
 
+      <!-- ABASTECIMIENTO -->
+      <a
+        routerLink="/compras"
+        routerLinkActive="active"
+        class="menu-item"
+      >
+        <span class="menu-icon">🛍️</span>
+        <span>Abastecimiento</span>
+      </a>
+
+      <!-- REPORTES -->
+      <a
+        routerLink="/reportes"
+        routerLinkActive="active"
+        class="menu-item"
+      >
+        <span class="menu-icon">📊</span>
+        <span>Reportes</span>
+      </a>
 
       <!-- USUARIOS -->
-
       <a
         routerLink="/usuarios"
         routerLinkActive="active"
         class="menu-item"
       >
-
         <span class="menu-icon">👥</span>
-
         <span>Usuarios</span>
-
       </a>
 
-
       <!-- ROLES -->
-
       <a
         routerLink="/roles"
         routerLinkActive="active"
         class="menu-item"
       >
-
         <span class="menu-icon">🔐</span>
-
         <span>Roles</span>
-
       </a>
 
     }
 
   </nav>
 
-
-  <!-- ===================================== -->
-  <!-- LOGOUT -->
-  <!-- ===================================== -->
-
+  <!-- CERRAR SESIÓN -->
   <div class="sidebar-footer">
 
     <button
       class="logout-button"
       (click)="logout()"
     >
-
       <span>🚪</span>
-
       <span>Salir</span>
-
     </button>
 
   </div>
