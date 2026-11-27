@@ -3223,3 +3223,24 @@
     padding: 12px;
   }
 }
+
+/* ==========================================
+   LOGOTIPO OFICIAL FERRETERÍA GUM
+   ========================================== */
+
+.ticket-logo-img {
+  display: block;
+  width: 100%;
+  max-width: 260px;
+  height: 90px;
+  object-fit: contain;
+  margin: 0 auto 10px;
+}
+
+/* Ajuste para pantallas pequeñas */
+@media (max-width: 480px) {
+  .ticket-logo-img {
+    max-width: 250px;
+    max-height: 95px;
+  }
+}
