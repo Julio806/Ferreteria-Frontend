@@ -1,4 +1,3 @@
-
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription, interval } from 'rxjs';
@@ -47,7 +46,21 @@ export class Header implements OnInit, OnDestroy {
     this.suscripcion?.unsubscribe();
   }
 
+  // ==========================================
+  // VALIDAR ROL DE ADMINISTRADOR
+  // ==========================================
 
+  esAdmin(): boolean {
+    const rolNormalizado = (this.rol ?? '')
+      .toUpperCase()
+      .replace('ROLE_', '');
+
+    return rolNormalizado === 'ADMIN';
+  }
+
+  // ==========================================
+  // CARGAR NOTIFICACIONES DE STOCK BAJO
+  // ==========================================
 
   cargarNotificaciones(): void {
     this.cargandoNotificaciones = true;
@@ -76,7 +89,9 @@ export class Header implements OnInit, OnDestroy {
     });
   }
 
-
+  // ==========================================
+  // ABRIR / CERRAR NOTIFICACIONES
+  // ==========================================
 
   toggleNotificaciones(): void {
     console.log('🔔 Clic en la campana');
@@ -90,7 +105,19 @@ export class Header implements OnInit, OnDestroy {
     }
   }
 
+  // ==========================================
+  // VER PRODUCTO EN ABASTECIMIENTO
+  // SOLO ADMIN
+  // ==========================================
+
   verProducto(producto: Producto): void {
+
+    // Bloquear cualquier intento de acceso desde vendedor.
+    if (!this.esAdmin()) {
+      console.warn('Acceso a abastecimiento bloqueado: usuario sin permisos.');
+      return;
+    }
+
     this.notificacionesAbiertas = false;
 
     this.router.navigate(['/compras/nueva'], {
@@ -100,14 +127,22 @@ export class Header implements OnInit, OnDestroy {
     });
   }
 
+  // ==========================================
+  // IR A INVENTARIO
+  // ==========================================
+
   irAInventario(): void {
     this.notificacionesAbiertas = false;
 
-    // Por ahora, Inventario corresponde a /productos.
+    // Inventario corresponde a /productos.
     this.router.navigate(['/productos'], {
       queryParams: { stockBajo: true }
     });
   }
+
+  // ==========================================
+  // CERRAR SESIÓN
+  // ==========================================
 
   logout(): void {
     this.authService.logout();
