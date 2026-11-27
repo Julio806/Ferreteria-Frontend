@@ -1,5 +1,21 @@
 <div class="nueva-venta-page">
 
+  <!-- NOTIFICACIÓN FLOTANTE -->
+  @if (error) {
+  <div class="toast-stock" role="alert">
+    <div class="toast-stock-icon">⚠</div>
+
+    <div class="toast-stock-contenido">
+      <strong>Stock insuficiente</strong>
+      <p>{{ error }}</p>
+    </div>
+
+    <button type="button" class="toast-stock-cerrar" (click)="cerrarMensajeError()" aria-label="Cerrar notificación">
+      ×
+    </button>
+  </div>
+  }
+
   <!-- ==========================================
        ENCABEZADO
        ========================================== -->
@@ -55,178 +71,157 @@
           🔎
         </span>
 
-        <input
-          type="text"
-          placeholder="Buscar por nombre, código o marca..."
-          [(ngModel)]="busqueda"
-          (input)="buscarProducto()"
-        />
+        <input type="text" placeholder="Buscar por nombre, código o marca..." [(ngModel)]="busqueda"
+          (input)="buscarProducto()" />
 
       </div>
 
 
       <!-- CARGANDO -->
 
-      @if (cargando) {
+      @if (cargando && !error) {
 
-        <div class="estado">
+      <div class="estado">
 
-          <div class="spinner"></div>
+        <div class="spinner"></div>
 
-          <p>
-            Cargando productos...
-          </p>
+        <p>
+          Cargando productos...
+        </p>
 
-        </div>
-
-      }
-
-
-      <!-- ERROR -->
-
-      @if (!cargando && error) {
-
-        <div class="mensaje-error">
-
-          ⚠️ {{ error }}
-
-        </div>
+      </div>
 
       }
 
 
       <!-- CATÁLOGO -->
 
-      @if (!cargando && !error) {
+      @if (!cargando) {
 
-        <div class="productos-grid">
+      <div class="productos-grid">
 
-          @for (
-            producto of productosFiltrados;
-            track producto.id
-          ) {
+        @for (
+        producto of productosFiltrados;
+        track producto.id
+        ) {
 
-            <div class="producto-card">
-
-
-              <!-- ICONO -->
-
-              <div class="producto-icono">
-                📦
-              </div>
+        <div class="producto-card">
 
 
-              <!-- INFORMACIÓN -->
+          <!-- ICONO -->
 
-              <div class="producto-info">
-
-                <span class="producto-codigo">
-                  {{ producto.codigo }}
-                </span>
-
-                <h3>
-                  {{ producto.nombre }}
-                </h3>
-
-                @if (producto.marca) {
-
-                  <p class="producto-marca">
-                    {{ producto.marca }}
-                  </p>
-
-                }
-
-              </div>
+          <div class="producto-icono">
+            📦
+          </div>
 
 
-              <!-- PRECIO Y STOCK -->
+          <!-- INFORMACIÓN -->
 
-              <div class="producto-footer">
+          <div class="producto-info">
 
-                <div>
+            <span class="producto-codigo">
+              {{ producto.codigo }}
+            </span>
 
-                  <strong class="producto-precio">
+            <h3>
+              {{ producto.nombre }}
+            </h3>
 
-                    {{ formatearDinero(producto.precioVenta) }}
+            @if (producto.marca) {
 
-                  </strong>
+            <p class="producto-marca">
+              {{ producto.marca }}
+            </p>
 
-                  <span class="producto-unidad">
-                    / {{ producto.unidadMedida }}
-                  </span>
+            }
 
-                </div>
-
-
-                @if (producto.stock > 0) {
-
-                  <span class="stock disponible">
-                    Stock: {{ producto.stock }}
-                  </span>
-
-                } @else {
-
-                  <span class="stock agotado">
-                    Agotado
-                  </span>
-
-                }
-
-              </div>
+          </div>
 
 
-              <!-- BOTÓN AGREGAR -->
+          <!-- PRECIO Y STOCK -->
 
-              <button
-                type="button"
-                class="btn-agregar"
-                [disabled]="producto.stock <= 0"
-                (click)="agregarAlCarrito(producto)"
-              >
+          <div class="producto-footer">
 
-                @if (producto.stock > 0) {
+            <div>
 
-                  <span>＋</span>
-                  Agregar
+              <strong class="producto-precio">
 
-                } @else {
+                {{ formatearDinero(producto.precioVenta) }}
 
-                  Sin stock
+              </strong>
 
-                }
-
-              </button>
-
+              <span class="producto-unidad">
+                / {{ producto.unidadMedida }}
+              </span>
 
             </div>
 
-          }
+
+            @if (producto.stock > 0) {
+
+            <span class="stock disponible">
+              Stock: {{ producto.stock }}
+            </span>
+
+            } @else {
+
+            <span class="stock agotado">
+              Agotado
+            </span>
+
+            }
+
+          </div>
 
 
-          <!-- SIN RESULTADOS -->
+          <!-- BOTÓN AGREGAR -->
 
-          @if (productosFiltrados.length === 0) {
+          <button type="button" class="btn-agregar" [disabled]="producto.stock <= 0"
+            (click)="agregarAlCarrito(producto)">
 
-            <div class="sin-productos">
+            @if (producto.stock > 0) {
 
-              <div class="sin-productos-icono">
-                🔍
-              </div>
+            <span>＋</span>
+            Agregar
 
-              <h3>
-                No se encontraron productos
-              </h3>
+            } @else {
 
-              <p>
-                Intenta buscar con otro nombre,
-                código o marca.
-              </p>
+            Sin stock
 
-            </div>
+            }
 
-          }
+          </button>
+
 
         </div>
+
+        }
+
+
+        <!-- SIN RESULTADOS -->
+
+        @if (productosFiltrados.length === 0) {
+
+        <div class="sin-productos">
+
+          <div class="sin-productos-icono">
+            🔍
+          </div>
+
+          <h3>
+            No se encontraron productos
+          </h3>
+
+          <p>
+            Intenta buscar con otro nombre,
+            código o marca.
+          </p>
+
+        </div>
+
+        }
+
+      </div>
 
       }
 
@@ -261,13 +256,9 @@
 
         @if (carrito.length > 0) {
 
-          <button
-            type="button"
-            class="btn-limpiar"
-            (click)="limpiarVenta()"
-          >
-            Limpiar
-          </button>
+        <button type="button" class="btn-limpiar" (click)="limpiarVenta()">
+          Limpiar
+        </button>
 
         }
 
@@ -278,22 +269,22 @@
 
       @if (carrito.length === 0) {
 
-        <div class="carrito-vacio">
+      <div class="carrito-vacio">
 
-          <div class="carrito-vacio-icono">
-            🛒
-          </div>
-
-          <h3>
-            El carrito está vacío
-          </h3>
-
-          <p>
-            Selecciona productos del catálogo
-            para comenzar la venta.
-          </p>
-
+        <div class="carrito-vacio-icono">
+          🛒
         </div>
+
+        <h3>
+          El carrito está vacío
+        </h3>
+
+        <p>
+          Selecciona productos del catálogo
+          para comenzar la venta.
+        </p>
+
+      </div>
 
       }
 
@@ -302,112 +293,92 @@
 
       @if (carrito.length > 0) {
 
-        <div class="carrito-items">
+      <div class="carrito-items">
 
-          @for (
-            item of carrito;
-            track item.producto.id
-          ) {
+        @for (
+        item of carrito;
+        track item.producto.id
+        ) {
 
-            <div class="carrito-item">
-
-
-              <!-- INFORMACIÓN -->
-
-              <div class="carrito-item-info">
-
-                <strong>
-                  {{ item.producto.nombre }}
-                </strong>
-
-                <span>
-                  {{ formatearDinero(item.producto.precioVenta) }}
-                  c/u
-                </span>
-
-              </div>
+        <div class="carrito-item">
 
 
-              <!-- CONTROLES -->
+          <!-- INFORMACIÓN -->
 
-              <div class="carrito-item-bottom">
+          <div class="carrito-item-info">
 
+            <strong>
+              {{ item.producto.nombre }}
+            </strong>
 
-                <div class="cantidad-control">
+            <span>
+              {{ formatearDinero(item.producto.precioVenta) }}
+              c/u
+            </span>
 
-                  <button
-                    type="button"
-                    (click)="disminuirCantidad(item)"
-                    title="Disminuir"
-                  >
-                    −
-                  </button>
-
-
-                  <span>
-                    {{ item.cantidad }}
-                  </span>
+          </div>
 
 
-                  <button
-                    type="button"
-                    (click)="aumentarCantidad(item)"
-                    title="Aumentar"
-                  >
-                    +
-                  </button>
+          <!-- CONTROLES -->
 
-                </div>
+          <div class="carrito-item-bottom">
 
 
-                <strong class="item-subtotal">
+            <div class="cantidad-control">
 
-                  {{ formatearDinero(item.subtotal) }}
-
-                </strong>
-
-
-                <button
-                  type="button"
-                  class="btn-eliminar-item"
-                  title="Eliminar producto"
-                  (click)="eliminarDelCarrito(item)"
-                >
-                  🗑️
-                </button>
+              <button type="button" (click)="disminuirCantidad(item)" title="Disminuir">
+                −
+              </button>
 
 
-              </div>
+              <span>
+                {{ item.cantidad }}
+              </span>
+
+
+              <button type="button" (click)="aumentarCantidad(item)" title="Aumentar">
+                +
+              </button>
 
             </div>
 
-          }
+
+            <strong class="item-subtotal">
+
+              {{ formatearDinero(item.subtotal) }}
+
+            </strong>
+
+
+            <button type="button" class="btn-eliminar-item" title="Eliminar producto"
+              (click)="eliminarDelCarrito(item)">
+              🗑️
+            </button>
+
+
+          </div>
 
         </div>
+
+        }
+
+      </div>
 
       }
 
 
-
       <!-- MÉTODO DE PAGO -->
-
       <div class="metodo-pago-section">
 
         <label>
           Método de pago
         </label>
 
-
         <div class="metodos-pago">
 
-
-          <!-- EFECTIVO -->
-
-          <button
-            type="button"
-            [class.activo]="metodoPago === 'EFECTIVO'"
-            (click)="metodoPago = 'EFECTIVO'"
-          >
+          <!-- ÚNICO MÉTODO DE PAGO: EFECTIVO -->
+          <button type="button" class="activo" [class.activo]="metodoPago === 'EFECTIVO'"
+            (click)="metodoPago = 'EFECTIVO'">
 
             💵
 
@@ -416,41 +387,6 @@
             </span>
 
           </button>
-
-
-          <!-- TARJETA -->
-
-          <button
-            type="button"
-            [class.activo]="metodoPago === 'TARJETA'"
-            (click)="metodoPago = 'TARJETA'"
-          >
-
-            💳
-
-            <span>
-              Tarjeta
-            </span>
-
-          </button>
-
-
-          <!-- TRANSFERENCIA -->
-
-          <button
-            type="button"
-            [class.activo]="metodoPago === 'TRANSFERENCIA'"
-            (click)="metodoPago = 'TRANSFERENCIA'"
-          >
-
-            🏦
-
-            <span>
-              Transferencia
-            </span>
-
-          </button>
-
 
         </div>
 
@@ -508,26 +444,22 @@
 
       <!-- FINALIZAR -->
 
-      <button
-        type="button"
-        class="btn-finalizar"
-        [disabled]="carrito.length === 0 || guardando"
-        (click)="finalizarVenta()"
-      >
+      <button type="button" class="btn-finalizar" [disabled]="carrito.length === 0 || guardando"
+        (click)="finalizarVenta()">
 
         @if (guardando) {
 
-          <div class="spinner-button"></div>
+        <div class="spinner-button"></div>
 
-          Procesando...
+        Procesando...
 
         } @else {
 
-          <span>
-            ✓
-          </span>
+        <span>
+          ✓
+        </span>
 
-          Finalizar venta
+        Finalizar venta
 
         }
 
@@ -545,9 +477,9 @@
        MODAL - VENTA REALIZADA
        ===================================================== -->
 
-  
 
-@if (mostrarTicket && ventaRealizada) {
+
+  @if (mostrarTicket && ventaRealizada) {
 
   <div class="ticket-overlay" (click)="cerrarTicket()">
 
@@ -556,28 +488,16 @@
       <!-- COMPROBANTE -->
       <div class="ticket-vista">
 
-        <!-- LOGOTIPO -->
+        <!-- LOGOTIPO GUM -->
         <div class="ticket-encabezado">
 
           <div class="ticket-logo">
-            <svg viewBox="0 0 24 24"
-                 fill="none"
-                 stroke="currentColor"
-                 stroke-width="2.5"
-                 stroke-linecap="round"
-                 stroke-linejoin="round">
-              <path d="m14.5 6.5 3-3 3 3-3 3"/>
-              <path d="m3 21 9-9"/>
-              <path d="m14 4 6 6"/>
-              <path d="m5 19 4-4"/>
-              <path d="m14 14 6 6"/>
-              <path d="m16 12 4-4"/>
-              <path d="m3 21 4-1 2-2-3-3-2 2z"/>
-            </svg>
+            <img src="/logo-gum.png" alt="Ferretería GUM" class="ticket-logo-img">
           </div>
 
-          <h2>FERRETERÍA</h2>
-          <p class="ticket-subtitulo">COMPROBANTE DE VENTA</p>
+          <p class="ticket-subtitulo">
+            COMPROBANTE DE VENTA
+          </p>
 
         </div>
 
@@ -622,24 +542,24 @@
 
           @for (item of carrito; track item.producto.id) {
 
-            <div class="ticket-item">
+          <div class="ticket-item">
 
-              <strong class="ticket-producto-nombre">
-                {{ item.producto.nombre }}
+            <strong class="ticket-producto-nombre">
+              {{ item.producto.nombre }}
+            </strong>
+
+            <div class="ticket-item-detalle">
+              <span>
+                {{ item.cantidad }} ×
+                {{ formatearDinero(item.producto.precioVenta) }}
+              </span>
+
+              <strong>
+                {{ formatearDinero(item.subtotal) }}
               </strong>
-
-              <div class="ticket-item-detalle">
-                <span>
-                  {{ item.cantidad }} ×
-                  {{ formatearDinero(item.producto.precioVenta) }}
-                </span>
-
-                <strong>
-                  {{ formatearDinero(item.subtotal) }}
-                </strong>
-              </div>
-
             </div>
+
+          </div>
 
           }
 
@@ -689,44 +609,32 @@
 
       <!-- BOTONES -->
 
-<div class="ticket-acciones">
+      <div class="ticket-acciones">
 
-  <button
-    type="button"
-    class="ticket-btn-cerrar"
-    (click)="cerrarTicket()">
-    Cerrar
-  </button>
+        <button type="button" class="ticket-btn-cerrar" (click)="cerrarTicket()">
+          Cerrar
+        </button>
 
-  <button
-    type="button"
-    class="ticket-btn-nueva"
-    (click)="nuevaVenta()">
-    Nueva venta
-  </button>
+        <button type="button" class="ticket-btn-nueva" (click)="nuevaVenta()">
+          Nueva venta
+        </button>
 
-<button
-  type="button"
-  class="ticket-btn-pdf"
-  (click)="generarPdfTicket()">
-  Generar PDF
-</button>
+        <button type="button" class="ticket-btn-pdf" (click)="generarPdfTicket()">
+          Generar PDF
+        </button>
 
-  <button
-    type="button"
-    class="ticket-btn-listo"
-    (click)="imprimirTicket()">
-    ▣ Imprimir ticket
-  </button>
+        <button type="button" class="ticket-btn-listo" (click)="imprimirTicket()">
+          ▣ Imprimir ticket
+        </button>
 
-</div>
+      </div>
 
 
     </div>
 
   </div>
 
-}
+  }
 
 
 
