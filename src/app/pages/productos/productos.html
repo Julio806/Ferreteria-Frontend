@@ -21,28 +21,32 @@
     </div>
 
 
-    <!-- ==========================================
-         BUSCADOR
-         ========================================== -->
+  
+<!-- BUSCADOR DE INVENTARIO -->
+<div class="buscador">
 
-    <div class="buscador">
+    <input
+        type="text"
+        [(ngModel)]="terminoBusqueda"
+        (ngModelChange)="buscarProductos()"
+        placeholder="🔎 Buscar por nombre, código, marca o categoría..."
+        autocomplete="off"
+    >
 
-        <input type="text" [(ngModel)]="terminoBusqueda" (keyup.enter)="buscarProductos()"
-            placeholder="🔎 Buscar producto por nombre...">
+    @if (terminoBusqueda) {
 
-        <button type="button" class="btn-primary" (click)="buscarProductos()">
-            Buscar
-        </button>
-
-        @if (terminoBusqueda) {
-
-        <button type="button" class="btn-secondary" (click)="limpiarBusqueda()">
+        <button
+            type="button"
+            class="btn-secondary"
+            (click)="limpiarBusqueda()"
+        >
             Limpiar
         </button>
 
-        }
+    }
 
-    </div>
+</div>
+
 
 
     <!-- ==========================================
