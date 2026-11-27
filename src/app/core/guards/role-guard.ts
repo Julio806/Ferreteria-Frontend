@@ -1,4 +1,6 @@
+
 import { inject } from '@angular/core';
+
 import {
   ActivatedRouteSnapshot,
   CanActivateFn,
@@ -14,17 +16,55 @@ export const roleGuard: CanActivateFn = (
   const authService = inject(AuthService);
   const router = inject(Router);
 
+  // ==========================================
+  // VALIDAR AUTENTICACIÓN Y EXPIRACIÓN
+  // ==========================================
+
+  if (!authService.isAuthenticated()) {
+
+    authService.logout();
+
+    return router.createUrlTree(['/login']);
+
+  }
+
+  // ==========================================
+  // OBTENER ROL DEL USUARIO
+  // ==========================================
+
   const userRole = authService.getRole();
 
   const allowedRoles = route.data['roles'] as string[];
 
+
+  // ==========================================
+  // VALIDAR EXISTENCIA DEL ROL
+  // ==========================================
+
   if (!userRole) {
+
+    authService.logout();
+
     return router.createUrlTree(['/login']);
+
   }
 
-  if (allowedRoles.includes(userRole)) {
+
+  // ==========================================
+  // VALIDAR PERMISOS
+  // ==========================================
+
+  if (allowedRoles?.includes(userRole)) {
+
     return true;
+
   }
+
+
+  // ==========================================
+  // ACCESO NO AUTORIZADO
+  // ==========================================
 
   return router.createUrlTree(['/dashboard']);
+
 };
