@@ -33,61 +33,29 @@ import {
 })
 export class Productos implements OnInit {
 
-  // ==========================================
   // PRODUCTOS
-  // ==========================================
-
   productos: Producto[] = [];
+  productosOriginales: Producto[] = [];
 
-
-  // ==========================================
   // CATEGORÍAS
-  // ==========================================
-
   categorias: Categoria[] = [];
 
-
-  // ==========================================
   // BÚSQUEDA
-  // ==========================================
-
   terminoBusqueda = '';
 
-
-  // ==========================================
   // FORMULARIO
-  // ==========================================
-
   productoForm: FormGroup;
 
-
-  // ==========================================
   // ESTADOS
-  // ==========================================
-
   cargando = true;
-
   error = false;
-
   guardando = false;
-
   mostrarModal = false;
-
   mensajeError = '';
 
-
-  // ==========================================
   // EDICIÓN
-  // ==========================================
-
   modoEdicion = false;
-
   productoEditandoId: number | null = null;
-
-
-  // ==========================================
-  // CONSTRUCTOR
-  // ==========================================
 
   constructor(
     private productoService: ProductoService,
@@ -174,28 +142,18 @@ export class Productos implements OnInit {
 
   }
 
-
-  // ==========================================
   // INICIALIZACIÓN
-  // ==========================================
-
   ngOnInit(): void {
 
     this.obtenerProductos();
-
     this.obtenerCategorias();
 
   }
 
-
-  // ==========================================
   // OBTENER PRODUCTOS
-  // ==========================================
-
   obtenerProductos(): void {
 
     this.cargando = true;
-
     this.error = false;
 
     this.productoService
@@ -204,7 +162,9 @@ export class Productos implements OnInit {
 
         next: (data) => {
 
-          this.productos = data;
+          this.productosOriginales = [...data];
+
+          this.buscarProductos();
 
           this.cargando = false;
 
@@ -218,7 +178,6 @@ export class Productos implements OnInit {
           );
 
           this.cargando = false;
-
           this.error = true;
 
         }
@@ -227,78 +186,76 @@ export class Productos implements OnInit {
 
   }
 
+  // NORMALIZAR TEXTO
+  private normalizarTexto(texto: string): string {
 
-  // ==========================================
-  // BUSCAR PRODUCTOS
-  // ==========================================
+    return (texto ?? '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim();
 
+  }
+
+  // BUSCAR PRODUCTOS EN TIEMPO REAL
   buscarProductos(): void {
 
-    const termino =
-      this.terminoBusqueda.trim();
-
-    // Si no hay búsqueda,
-    // mostramos todos los productos
+    const termino = this.normalizarTexto(
+      this.terminoBusqueda
+    );
 
     if (!termino) {
 
-      this.obtenerProductos();
+      this.productos = [...this.productosOriginales];
 
       return;
 
     }
 
-    this.cargando = true;
+    this.productos = this.productosOriginales.filter(
+      producto => {
 
-    this.error = false;
+        const nombre = this.normalizarTexto(
+          producto.nombre ?? ''
+        );
 
-    this.productoService
-      .buscarPorNombre(termino)
-      .subscribe({
+        const codigo = this.normalizarTexto(
+          producto.codigo ?? ''
+        );
 
-        next: (data) => {
+        const codigoBarras = this.normalizarTexto(
+          producto.codigoBarras ?? ''
+        );
 
-          this.productos = data;
+        const marca = this.normalizarTexto(
+          producto.marca ?? ''
+        );
 
-          this.cargando = false;
+        const categoria = this.normalizarTexto(
+          producto.categoriaNombre ?? ''
+        );
 
-        },
+        return nombre.includes(termino) ||
+               codigo.includes(termino) ||
+               codigoBarras.includes(termino) ||
+               marca.includes(termino) ||
+               categoria.includes(termino);
 
-        error: (err) => {
-
-          console.error(
-            'Error al buscar productos:',
-            err
-          );
-
-          this.cargando = false;
-
-          this.error = true;
-
-        }
-
-      });
+      }
+    );
 
   }
 
-
-  // ==========================================
   // LIMPIAR BÚSQUEDA
-  // ==========================================
-
   limpiarBusqueda(): void {
 
     this.terminoBusqueda = '';
 
-    this.obtenerProductos();
+    this.buscarProductos();
 
   }
 
-
-  // ==========================================
   // OBTENER CATEGORÍAS
-  // ==========================================
-
   obtenerCategorias(): void {
 
     this.categoriaService
@@ -324,84 +281,52 @@ export class Productos implements OnInit {
 
   }
 
-
-  // ==========================================
   // ABRIR MODAL NUEVO
-  // ==========================================
-
   abrirModal(): void {
 
     this.modoEdicion = false;
-
     this.productoEditandoId = null;
 
     this.productoForm.reset({
 
       codigo: '',
-
       codigoBarras: '',
-
       nombre: '',
-
       descripcion: '',
-
       marca: '',
-
       precioCompra: 0,
-
       precioVenta: 0,
-
       stock: 0,
-
       stockMinimo: 0,
-
       unidadMedida: 'PIEZA',
-
       categoriaId: null
 
     });
 
     this.mensajeError = '';
-
     this.mostrarModal = true;
 
   }
 
-
-  // ==========================================
   // EDITAR PRODUCTO
-  // ==========================================
-
   editarProducto(producto: Producto): void {
 
     this.modoEdicion = true;
-
     this.productoEditandoId = producto.id;
-
     this.mensajeError = '';
 
     this.productoForm.patchValue({
 
       codigo: producto.codigo,
-
       codigoBarras: producto.codigoBarras ?? '',
-
       nombre: producto.nombre,
-
       descripcion: producto.descripcion,
-
       marca: producto.marca,
-
       precioCompra: producto.precioCompra,
-
       precioVenta: producto.precioVenta,
-
       stock: producto.stock,
-
       stockMinimo: producto.stockMinimo,
-
       unidadMedida: producto.unidadMedida,
-
       categoriaId: producto.categoriaId
 
     });
@@ -410,56 +335,37 @@ export class Productos implements OnInit {
 
   }
 
-
-  // ==========================================
   // CERRAR MODAL
-  // ==========================================
-
   cerrarModal(): void {
 
     if (this.guardando) {
-
       return;
-
     }
 
     this.mostrarModal = false;
-
     this.modoEdicion = false;
-
     this.productoEditandoId = null;
-
     this.mensajeError = '';
 
   }
 
-
-  // ==========================================
   // GUARDAR PRODUCTO
-  // ==========================================
-
   guardarProducto(): void {
 
     if (this.productoForm.invalid) {
 
       this.productoForm.markAllAsTouched();
-
       return;
 
     }
 
     this.guardando = true;
-
     this.mensajeError = '';
 
     const producto: ProductoRequest =
       this.productoForm.getRawValue();
 
-
-    // ==========================================
     // ACTUALIZAR PRODUCTO
-    // ==========================================
-
     if (
       this.modoEdicion &&
       this.productoEditandoId !== null
@@ -474,17 +380,11 @@ export class Productos implements OnInit {
 
           next: (data) => {
 
-            console.log(
-              'Producto actualizado:',
-              data
-            );
+            console.log('Producto actualizado:', data);
 
             this.guardando = false;
-
             this.mostrarModal = false;
-
             this.modoEdicion = false;
-
             this.productoEditandoId = null;
 
             this.obtenerProductos();
@@ -512,24 +412,16 @@ export class Productos implements OnInit {
 
     }
 
-
-    // ==========================================
     // CREAR PRODUCTO
-    // ==========================================
-
     this.productoService
       .crear(producto)
       .subscribe({
 
         next: (data) => {
 
-          console.log(
-            'Producto creado:',
-            data
-          );
+          console.log('Producto creado:', data);
 
           this.guardando = false;
-
           this.mostrarModal = false;
 
           this.obtenerProductos();
@@ -555,17 +447,10 @@ export class Productos implements OnInit {
 
   }
 
-
-  // ==========================================
   // VALIDAR CAMPO
-  // ==========================================
+  campoInvalido(campo: string): boolean {
 
-  campoInvalido(
-    campo: string
-  ): boolean {
-
-    const control =
-      this.productoForm.get(campo);
+    const control = this.productoForm.get(campo);
 
     return !!(
       control &&
@@ -575,29 +460,20 @@ export class Productos implements OnInit {
 
   }
 
-
-  // ==========================================
   // ELIMINAR PRODUCTO
-  // ==========================================
-
   eliminarProducto(producto: Producto): void {
 
     const confirmar = window.confirm(
 
       `¿Estás seguro de eliminar el producto "${producto.nombre}"?\n\n` +
-
       `Código: ${producto.codigo}\n` +
-
       `Código de barras: ${producto.codigoBarras || 'Sin asignar'}\n` +
-
       `Stock: ${producto.stock}`
 
     );
 
     if (!confirmar) {
-
       return;
-
     }
 
     this.productoService
@@ -611,12 +487,12 @@ export class Productos implements OnInit {
             producto.id
           );
 
-          // Quitamos el producto de la tabla
-
-          this.productos =
-            this.productos.filter(
+          this.productosOriginales =
+            this.productosOriginales.filter(
               p => p.id !== producto.id
             );
+
+          this.buscarProductos();
 
         },
 
@@ -628,10 +504,8 @@ export class Productos implements OnInit {
           );
 
           alert(
-
             err?.error?.message ??
             'No se pudo eliminar el producto.'
-
           );
 
         }
