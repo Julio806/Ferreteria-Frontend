@@ -2193,9 +2193,21 @@
   color: #f07800;
 }
 
-.ticket-logo svg {
-  width: 35px;
-  height: 35px;
+.ticket-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 9px;
+}
+
+.ticket-logo-img {
+  display: block;
+  width: 170px;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  margin: 0 auto;
+  background: transparent;
 }
 
 .ticket-encabezado h2 {
@@ -2440,4 +2452,116 @@
 .ticket-btn-listo:hover {
   transform: translateY(-2px);
   filter: brightness(.95);
+}
+
+
+/* ==========================================
+   NOTIFICACIÓN FLOTANTE DE ERRORES
+   ========================================== */
+
+.toast-stock {
+  position: fixed;
+  top: 185px;
+  right: 28px;
+  z-index: 99999;
+
+  width: 390px;
+  max-width: calc(100vw - 40px);
+
+  display: flex;
+  align-items: center;
+  gap: 13px;
+
+  padding: 16px 18px;
+
+  background: #2b1c1c;
+  border: 1px solid #ef4444;
+  border-radius: 12px;
+
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+
+  animation: toastEntrada 0.3s ease-out;
+}
+
+/* ICONO */
+
+.toast-stock-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 34px;
+  height: 34px;
+
+  color: #ff5252;
+  background: rgba(239, 68, 68, 0.15);
+  border-radius: 50%;
+
+  font-size: 21px;
+  font-weight: bold;
+}
+
+/* CONTENIDO */
+
+.toast-stock-contenido {
+  flex: 1;
+  min-width: 0;
+}
+
+.toast-stock-contenido strong {
+  display: block;
+  color: #ffffff;
+  font-size: 15px;
+  margin-bottom: 5px;
+}
+
+.toast-stock-contenido p {
+  margin: 0;
+  color: #fca5a5;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* BOTÓN CERRAR */
+
+.toast-stock-cerrar {
+  align-self: flex-start;
+
+  border: none;
+  background: transparent;
+
+  color: #aaaaaa;
+  font-size: 23px;
+  cursor: pointer;
+
+  transition: color 0.2s;
+}
+
+.toast-stock-cerrar:hover {
+  color: #ffffff;
+}
+
+/* ANIMACIÓN */
+
+@keyframes toastEntrada {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 600px) {
+  .toast-stock {
+    top: 90px;
+    right: 12px;
+    width: auto;
+    left: 12px;
+  }
 }
