@@ -1,4 +1,3 @@
-
 <header class="header">
 
   <div class="header-left">
@@ -20,36 +19,32 @@
     <!-- NOTIFICACIONES -->
     <div class="notification-container">
 
+      <button
+        class="notification-button"
+        type="button"
+        aria-label="Notificaciones"
+        [attr.aria-expanded]="notificacionesAbiertas"
+        (click)="toggleNotificaciones()">
 
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="23"
+          height="23"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true">
+          <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/>
+          <path d="M10 21h4"/>
+        </svg>
 
-<button
-  class="notification-button"
-  type="button"
-  aria-label="Notificaciones"
-  [attr.aria-expanded]="notificacionesAbiertas"
-  (click)="toggleNotificaciones()">
-
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="23"
-    height="23"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="1.8"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true">
-    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/>
-    <path d="M10 21h4"/>
-  </svg>
-
-  <span class="notification-count">
-    {{ productosStockBajo.length }}
-  </span>
-</button>
-
-
+        <span class="notification-count">
+          {{ productosStockBajo.length }}
+        </span>
+      </button>
 
       @if (notificacionesAbiertas) {
         <section class="notification-panel">
@@ -93,39 +88,72 @@
             <div class="notification-list">
 
               @for (producto of productosStockBajo; track producto.id) {
-                <button
-                  type="button"
-                  class="notification-item"
-                  (click)="verProducto(producto)">
 
-                  <span
-                    class="notification-icon"
-                    [class.out-of-stock]="producto.stock === 0">
-                    ⚠
-                  </span>
+                <!-- ADMIN: puede abrir el producto en abastecimiento -->
+                @if (esAdmin()) {
+                  <button
+                    type="button"
+                    class="notification-item"
+                    (click)="verProducto(producto)">
 
-                  <span class="notification-content">
-                    <strong>
-                      {{ producto.stock === 0
-                        ? 'Producto agotado'
-                        : 'Stock bajo' }}
-                    </strong>
-
-                    <span class="notification-product-name">
-                      {{ producto.nombre }}
+                    <span
+                      class="notification-icon"
+                      [class.out-of-stock]="producto.stock === 0">
+                      ⚠
                     </span>
 
-                    <span class="notification-stock">
-                      Existencias: {{ producto.stock }}
-                      · Mínimo: {{ producto.stockMinimo }}
+                    <span class="notification-content">
+                      <strong>
+                        {{ producto.stock === 0
+                          ? 'Producto agotado'
+                          : 'Stock bajo' }}
+                      </strong>
+
+                      <span class="notification-product-name">
+                        {{ producto.nombre }}
+                      </span>
+
+                      <span class="notification-stock">
+                        Existencias: {{ producto.stock }}
+                        · Mínimo: {{ producto.stockMinimo }}
+                      </span>
+
+                      <span class="notification-link">
+                        Ver producto →
+                      </span>
                     </span>
 
-                    <span class="notification-link">
-                      Ver producto →
-                    </span>
-                  </span>
+                  </button>
+                } @else {
+                  <!-- VENDEDOR: solo puede consultar la alerta -->
+                  <div class="notification-item notification-item-readonly">
 
-                </button>
+                    <span
+                      class="notification-icon"
+                      [class.out-of-stock]="producto.stock === 0">
+                      ⚠
+                    </span>
+
+                    <span class="notification-content">
+                      <strong>
+                        {{ producto.stock === 0
+                          ? 'Producto agotado'
+                          : 'Stock bajo' }}
+                      </strong>
+
+                      <span class="notification-product-name">
+                        {{ producto.nombre }}
+                      </span>
+
+                      <span class="notification-stock">
+                        Existencias: {{ producto.stock }}
+                        · Mínimo: {{ producto.stockMinimo }}
+                      </span>
+                    </span>
+
+                  </div>
+                }
+
               }
 
             </div>
@@ -153,35 +181,33 @@
     </div>
 
     <!-- CERRAR SESIÓN -->
+    <button
+      class="logout-button"
+      type="button"
+      (click)="logout()"
+      title="Cerrar sesión"
+      aria-label="Cerrar sesión">
 
-<button
-  class="logout-button"
-  type="button"
-  (click)="logout()"
-  title="Cerrar sesión"
-  aria-label="Cerrar sesión">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true">
 
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+        <polyline points="16 17 21 12 16 7"/>
+        <line x1="21" y1="12" x2="9" y2="12"/>
 
-    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-    <polyline points="16 17 21 12 16 7"/>
-    <line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
 
-  </svg>
-
-  <span>Cerrar sesión</span>
-</button>
-
+      <span>Cerrar sesión</span>
+    </button>
 
   </div>
 </header>
