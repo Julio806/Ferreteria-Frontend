@@ -141,6 +141,8 @@ export class NuevaVenta implements OnInit {
 
   mensajeExito: string = '';
 
+  private errorTimeout: ReturnType<typeof setTimeout> | undefined;
+
 
   // ==========================================
   // TICKET
@@ -165,7 +167,7 @@ export class NuevaVenta implements OnInit {
 
     private router: Router
 
-  ) {}
+  ) { }
 
 
   // ==========================================
@@ -175,6 +177,37 @@ export class NuevaVenta implements OnInit {
   ngOnInit(): void {
 
     this.cargarProductos();
+
+  }
+
+
+  // ==========================================
+  // NOTIFICACIONES DE ERROR
+  // ==========================================
+
+  mostrarError(mensaje: string): void {
+
+    this.error = mensaje;
+
+    if (this.errorTimeout) {
+      clearTimeout(this.errorTimeout);
+    }
+
+    this.errorTimeout = setTimeout(() => {
+      this.error = '';
+      this.errorTimeout = undefined;
+    }, 4000);
+
+  }
+
+  cerrarMensajeError(): void {
+
+    this.error = '';
+
+    if (this.errorTimeout) {
+      clearTimeout(this.errorTimeout);
+      this.errorTimeout = undefined;
+    }
 
   }
 
@@ -210,9 +243,10 @@ export class NuevaVenta implements OnInit {
             error
           );
 
-          this.error =
+          this.mostrarError(
             error?.error?.message ||
-            'No se pudieron cargar los productos.';
+            'No se pudieron cargar los productos.'
+          );
 
           this.cargando = false;
 
@@ -300,8 +334,9 @@ export class NuevaVenta implements OnInit {
 
     if (producto.stock <= 0) {
 
-      this.error =
-        `El producto "${producto.nombre}" no tiene stock disponible.`;
+      this.mostrarError(
+        `El producto "${producto.nombre}" no tiene stock disponible.`
+      );
 
       return;
 
@@ -331,8 +366,9 @@ export class NuevaVenta implements OnInit {
 
       } else {
 
-        this.error =
-          `No hay más stock disponible de "${producto.nombre}".`;
+        this.mostrarError(
+          `No hay más stock disponible de "${producto.nombre}".`
+        );
 
       }
 
@@ -381,8 +417,9 @@ export class NuevaVenta implements OnInit {
 
     } else {
 
-      this.error =
-        `No hay más stock disponible de "${item.producto.nombre}".`;
+      this.mostrarError(
+        `No hay más stock disponible de "${item.producto.nombre}".`
+      );
 
     }
 
@@ -671,8 +708,9 @@ export class NuevaVenta implements OnInit {
       this.carrito.length === 0
     ) {
 
-      this.error =
-        'Agrega al menos un producto al carrito.';
+      this.mostrarError(
+        'Agrega al menos un producto al carrito.'
+      );
 
       return;
 
@@ -703,8 +741,9 @@ export class NuevaVenta implements OnInit {
 
     if (usuarioId === null) {
 
-      this.error =
-        'No se pudo identificar al usuario actual. Inicia sesión nuevamente.';
+      this.mostrarError(
+        'No se pudo identificar al usuario actual. Inicia sesión nuevamente.'
+      );
 
       return;
 
@@ -842,13 +881,11 @@ export class NuevaVenta implements OnInit {
           this.guardando = false;
 
 
-          this.error =
-
+          this.mostrarError(
             error?.error?.message ||
-
             error?.error?.error ||
-
-            'No se pudo realizar la venta.';
+            'No se pudo realizar la venta.'
+          );
 
         }
 
@@ -1247,6 +1284,15 @@ export class NuevaVenta implements OnInit {
 
             }
 
+            .ticket-logo-img {
+  display: block;
+  width: 42mm;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto 3mm;
+  object-fit: contain;
+}
+
 
           </style>
 
@@ -1274,13 +1320,24 @@ export class NuevaVenta implements OnInit {
     ventana.focus();
 
 
-    setTimeout(() => {
+const imagenes = Array.from(ventana.document.images);
 
-      ventana.print();
+Promise.all(
+  imagenes.map(img => {
+    if (img.complete) {
+      return Promise.resolve();
+    }
 
-      ventana.close();
-
-    }, 500);
+    return new Promise<void>(resolve => {
+      img.onload = () => resolve();
+      img.onerror = () => resolve();
+    });
+  })
+).then(() => {
+  ventana.focus();
+  ventana.print();
+  ventana.close();
+});
 
   }
 
@@ -1301,10 +1358,10 @@ export class NuevaVenta implements OnInit {
     this.router.navigate(['/ventas']);
 
   }
-// ==========================================
-// ==========================================
-// GENERAR PDF DEL TICKET
-// ==========================================
+  // ==========================================
+  // ==========================================
+  // GENERAR PDF DEL TICKET
+  // ==========================================
 
   generarPdfTicket(): void {
 
