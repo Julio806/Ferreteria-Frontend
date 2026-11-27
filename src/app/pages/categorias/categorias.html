@@ -30,42 +30,32 @@
     </div>
 
 
-    <!-- ==========================================
-         BUSCADOR
-         ========================================== -->
+  
+<!-- BUSCADOR DE CATEGORÍAS -->
+<div class="buscador">
 
-    <div class="buscador">
+    <input
+        type="text"
+        [(ngModel)]="terminoBusqueda"
+        (ngModelChange)="buscarCategorias()"
+        placeholder="🔎 Buscar categoría..."
+        autocomplete="off"
+    >
 
-        <input
-            type="text"
-            [(ngModel)]="terminoBusqueda"
-            (keyup.enter)="buscarCategorias()"
-            placeholder="🔎 Buscar categoría..."
-        >
-
+    @if (terminoBusqueda) {
 
         <button
             type="button"
-            class="btn-primary"
-            (click)="buscarCategorias()"
+            class="btn-secondary"
+            (click)="limpiarBusqueda()"
         >
-            Buscar
+            Limpiar
         </button>
 
+    }
 
-        @if (terminoBusqueda) {
+</div>
 
-            <button
-                type="button"
-                class="btn-secondary"
-                (click)="limpiarBusqueda()"
-            >
-                Limpiar
-            </button>
-
-        }
-
-    </div>
 
 
     <!-- ==========================================
