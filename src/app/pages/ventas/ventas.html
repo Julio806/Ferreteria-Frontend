@@ -505,40 +505,24 @@
   }
 
 
-<!-- MODAL: VISTA PREVIA DEL TICKET -->
-@if (mostrarTicket && ticketSeleccionado) {
+  <!-- MODAL: VISTA PREVIA DEL TICKET -->
+  @if (mostrarTicket && ticketSeleccionado) {
 
-  <div class="modal-overlay ticket-overlay"
-       (click)="cerrarTicket()">
+  <div class="modal-overlay ticket-overlay" (click)="cerrarTicket()">
 
-    <div class="ticket-modal"
-         (click)="$event.stopPropagation()">
+    <div class="ticket-modal" (click)="$event.stopPropagation()">
 
       <!-- COMPROBANTE -->
       <div class="ticket-vista">
 
-        <!-- LOGOTIPO -->
+        <!-- LOGOTIPO OFICIAL FERRETERÍA GUM -->
         <div class="ticket-encabezado">
 
-          <div class="ticket-logo">
-            <svg viewBox="0 0 24 24"
-                 fill="none"
-                 stroke="currentColor"
-                 stroke-width="2.5"
-                 stroke-linecap="round"
-                 stroke-linejoin="round">
-              <path d="m14.5 6.5 3-3 3 3-3 3"/>
-              <path d="m3 21 9-9"/>
-              <path d="m14 4 6 6"/>
-              <path d="m5 19 4-4"/>
-              <path d="m14 14 6 6"/>
-              <path d="m16 12 4-4"/>
-              <path d="m3 21 4-1 2-2-3-3-2 2z"/>
-            </svg>
-          </div>
+          <img src="/logo-gum.png" alt="Logotipo Ferretería GUM" class="ticket-logo-img" />
 
-          <h2>FERRETERÍA</h2>
-          <p class="ticket-subtitulo">COMPROBANTE DE VENTA</p>
+          <p class="ticket-subtitulo">
+            COMPROBANTE DE VENTA
+          </p>
 
         </div>
 
@@ -583,35 +567,35 @@
 
           @if (ticketSeleccionado.items.length) {
 
-            @for (item of ticketSeleccionado.items; track item.id) {
+          @for (item of ticketSeleccionado.items; track item.id) {
 
-              <div class="ticket-item">
+          <div class="ticket-item">
 
-                <strong class="ticket-producto-nombre">
-                  {{ item.productoNombre }}
-                </strong>
+            <strong class="ticket-producto-nombre">
+              {{ item.productoNombre }}
+            </strong>
 
-                <div class="ticket-item-detalle">
+            <div class="ticket-item-detalle">
 
-                  <span>
-                    {{ item.cantidad }}
-                    ×
-                    {{ formatearDinero(item.precioUnitario) }}
-                  </span>
+              <span>
+                {{ item.cantidad }}
+                ×
+                {{ formatearDinero(item.precioUnitario) }}
+              </span>
 
-                  <strong>
-                    {{ formatearDinero(item.subtotal) }}
-                  </strong>
+              <strong>
+                {{ formatearDinero(item.subtotal) }}
+              </strong>
 
-                </div>
+            </div>
 
-              </div>
+          </div>
 
-            }
+          }
 
           } @else {
 
-            <p>No hay productos registrados.</p>
+          <p>No hay productos registrados.</p>
 
           }
 
@@ -666,23 +650,15 @@
       <!-- BOTONES INFERIORES -->
       <div class="ticket-acciones">
 
-        <button type="button"
-                class="ticket-btn-cerrar"
-                (click)="cerrarTicket()">
+        <button type="button" class="ticket-btn-cerrar" (click)="cerrarTicket()">
           Cerrar
         </button>
 
-        <button type="button"
-                class="ticket-btn-listo"
-                (click)="imprimirTicketVenta()">
+        <button type="button" class="ticket-btn-listo" (click)="imprimirTicketVenta()">
 
-          <svg viewBox="0 0 24 24"
-               fill="none"
-               stroke="currentColor"
-               stroke-width="2.5"
-               stroke-linecap="round"
-               stroke-linejoin="round">
-            <path d="m5 12 5 5L20 7"/>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="m5 12 5 5L20 7" />
           </svg>
 
           Imprimir ticket
@@ -695,4 +671,4 @@
 
   </div>
 
-}
+  }
