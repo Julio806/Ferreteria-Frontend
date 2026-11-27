@@ -144,7 +144,7 @@ export class Ventas implements OnInit {
   constructor(
     private apiService: ApiService,
     private router: Router
-  ) {}
+  ) { }
 
   // ==========================================
   // INICIALIZAR
@@ -212,16 +212,16 @@ export class Ventas implements OnInit {
 
   // Aplicar filtro sin perder el texto de búsqueda
 
-private aplicarFiltro(): void {
+  private aplicarFiltro(): void {
 
-  const texto = this.busqueda
-    .trim()
-    .toLowerCase();
+    const texto = this.busqueda
+      .trim()
+      .toLowerCase();
 
-  // Primero aplicar la búsqueda
-  const resultados = !texto
-    ? [...this.ventas]
-    : this.ventas.filter((venta) => {
+    // Primero aplicar la búsqueda
+    const resultados = !texto
+      ? [...this.ventas]
+      : this.ventas.filter((venta) => {
 
         return (
           venta.folio?.toLowerCase().includes(texto) ||
@@ -233,17 +233,17 @@ private aplicarFiltro(): void {
 
       });
 
-  // Después ordenar por fecha: más recientes primero
-  this.ventasFiltradas = resultados.sort((a, b) => {
+    // Después ordenar por fecha: más recientes primero
+    this.ventasFiltradas = resultados.sort((a, b) => {
 
-    const fechaA = new Date(a.fechaCreacion).getTime();
-    const fechaB = new Date(b.fechaCreacion).getTime();
+      const fechaA = new Date(a.fechaCreacion).getTime();
+      const fechaB = new Date(b.fechaCreacion).getTime();
 
-    return fechaB - fechaA;
+      return fechaB - fechaA;
 
-  });
+    });
 
-}
+  }
 
 
   // ==========================================
@@ -403,7 +403,7 @@ private aplicarFiltro(): void {
         }
       });
   }
-  
+
   // ==========================================
   // TICKET DE UNA VENTA EXISTENTE
   // ==========================================
@@ -495,15 +495,26 @@ private aplicarFiltro(): void {
           .detalle { font-size: 10px; }
           .total { font-size: 15px; font-weight: bold; }
           .pie { margin-top: 16px; text-align: center; }
+          .logo-ticket {
+  display: block;
+  width: 100%;
+  max-width: 68mm;
+  max-height: 27mm;
+  object-fit: contain;
+  margin: 0 auto 5mm;
+}
         </style>
       </head>
       <body>
         <main class="ticket">
-          <header class="centro">
-            <h1>FERRE CENTRO</h1>
-            <p>FERRETERÍA JG</p>
-            <p>Ticket de venta</p>
-          </header>
+<header class="centro">
+  <img
+    src="${window.location.origin}/logo-gum.png"
+    alt="Ferretería GUM"
+    class="logo-ticket"
+  />
+  <p>COMPROBANTE DE VENTA</p>
+</header>
 
           <hr>
 
