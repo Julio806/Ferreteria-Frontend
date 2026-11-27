@@ -1,3 +1,4 @@
+
 import { Routes } from '@angular/router';
 
 import { LayoutComponent } from './layout/layout/layout';
@@ -11,13 +12,16 @@ import { Ventas } from './pages/ventas/ventas';
 import { NuevaVenta } from './pages/ventas/nueva-venta';
 
 import { Compras } from './pages/compras/compras';
+import { NuevaCompra } from './pages/compras/nueva-compra';
+
 import { Usuarios } from './pages/usuarios/usuarios';
 import { Roles } from './pages/roles/roles';
 
+import { Reportes } from './pages/reportes/reportes';
+
 import { authGuard } from './core/guards/auth-guard';
 import { roleGuard } from './core/guards/role-guard';
-import { NuevaCompra } from './pages/compras/nueva-compra';
-import { Reportes } from './pages/reportes/reportes';
+
 export const routes: Routes = [
 
   // ==========================================
@@ -36,7 +40,12 @@ export const routes: Routes = [
   {
     path: '',
     component: LayoutComponent,
+
+    // Comprobar autenticación al entrar al sistema
     canActivate: [authGuard],
+
+    // Comprobar autenticación al navegar entre módulos
+    canActivateChild: [authGuard],
 
     children: [
 
@@ -113,6 +122,7 @@ export const routes: Routes = [
         component: NuevaCompra
       },
 
+      // ----------------------------------------
       // USUARIOS - SOLO ADMIN
       // ----------------------------------------
 
@@ -125,13 +135,13 @@ export const routes: Routes = [
         }
       },
 
-       // ----------------------------------------
-      // REPORTES DE VENTAS
+      // ----------------------------------------
+      // REPORTES
       // ----------------------------------------
 
       {
         path: 'reportes',
-        component: Reportes,
+        component: Reportes
       },
 
       // ----------------------------------------
@@ -146,7 +156,6 @@ export const routes: Routes = [
           roles: ['ADMIN']
         }
       }
-      
 
     ]
   },
