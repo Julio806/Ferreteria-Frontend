@@ -1,7 +1,5 @@
 
-import {
-  HttpInterceptorFn
-} from '@angular/common/http';
+import { HttpInterceptorFn } from '@angular/common/http';
 
 import {
   catchError,
@@ -18,9 +16,16 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
+  // No interceptar el inicio de sesión
+  const isLoginRequest = req.url.includes('/auth/login');
+
+  if (isLoginRequest) {
+    return next(req);
+  }
+
   const token = authService.getToken();
 
-  // No enviar tokens vencidos
+  // Comprobar expiración
   if (token && authService.isTokenExpired(token)) {
 
     authService.logout();
@@ -32,6 +37,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     );
   }
 
+  // Agregar token a las peticiones
   const authReq = token
     ? req.clone({
         setHeaders: {
@@ -44,7 +50,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
     catchError(error => {
 
-      if (error.status === 401) {
+      if (error.status === 401 && token) {
 
         authService.logout();
 
