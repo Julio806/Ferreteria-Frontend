@@ -1,3 +1,4 @@
+
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
@@ -24,54 +25,26 @@ import {
 })
 export class Categorias implements OnInit {
 
-  // ==========================================
   // CATEGORÍAS
-  // ==========================================
-
   categorias: Categoria[] = [];
+  categoriasOriginales: Categoria[] = [];
 
-
-  // ==========================================
   // BÚSQUEDA
-  // ==========================================
-
   terminoBusqueda = '';
 
-
-  // ==========================================
   // FORMULARIO
-  // ==========================================
-
   categoriaForm: FormGroup;
 
-
-  // ==========================================
   // ESTADOS
-  // ==========================================
-
   cargando = true;
-
   error = false;
-
   guardando = false;
-
   mostrarModal = false;
-
   mensajeError = '';
 
-
-  // ==========================================
   // EDICIÓN
-  // ==========================================
-
   modoEdicion = false;
-
   categoriaEditandoId: number | null = null;
-
-
-  // ==========================================
-  // CONSTRUCTOR
-  // ==========================================
 
   constructor(
     private categoriaService: CategoriaService,
@@ -99,26 +72,14 @@ export class Categorias implements OnInit {
 
   }
 
-
-  // ==========================================
-  // INICIALIZACIÓN
-  // ==========================================
-
   ngOnInit(): void {
-
     this.obtenerCategorias();
-
   }
 
-
-  // ==========================================
   // OBTENER CATEGORÍAS
-  // ==========================================
-
   obtenerCategorias(): void {
 
     this.cargando = true;
-
     this.error = false;
 
     this.categoriaService
@@ -127,7 +88,9 @@ export class Categorias implements OnInit {
 
         next: (data) => {
 
-          this.categorias = data;
+          this.categoriasOriginales = [...data];
+
+          this.buscarCategorias();
 
           this.cargando = false;
 
@@ -141,7 +104,6 @@ export class Categorias implements OnInit {
           );
 
           this.cargando = false;
-
           this.error = true;
 
         }
@@ -150,168 +112,123 @@ export class Categorias implements OnInit {
 
   }
 
+  // NORMALIZAR TEXTO
+  private normalizarTexto(texto: string): string {
 
-  // ==========================================
-  // BUSCAR CATEGORÍAS
-  // ==========================================
+    return (texto ?? '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim();
 
+  }
+
+  // BUSCAR CATEGORÍAS EN TIEMPO REAL
   buscarCategorias(): void {
 
-    const termino =
+    const termino = this.normalizarTexto(
       this.terminoBusqueda
-        .trim()
-        .toLowerCase();
+    );
 
     if (!termino) {
 
-      this.obtenerCategorias();
+      this.categorias = [...this.categoriasOriginales];
 
       return;
 
     }
 
-    /*
-     * El backend actualmente no tiene
-     * un endpoint específico para buscar
-     * categorías.
-     *
-     * Por eso filtramos las categorías
-     * que ya tenemos cargadas.
-     */
+    this.categorias = this.categoriasOriginales.filter(
+      categoria => {
 
-    this.categorias =
-      this.categorias.filter(categoria =>
+        const nombre = this.normalizarTexto(
+          categoria.nombre
+        );
 
-        categoria.nombre
-          .toLowerCase()
-          .includes(termino)
+        const descripcion = this.normalizarTexto(
+          categoria.descripcion ?? ''
+        );
 
-        ||
+        return nombre.includes(termino) ||
+               descripcion.includes(termino);
 
-        (categoria.descripcion ?? '')
-          .toLowerCase()
-          .includes(termino)
-
-      );
+      }
+    );
 
   }
 
-
-  // ==========================================
   // LIMPIAR BÚSQUEDA
-  // ==========================================
-
   limpiarBusqueda(): void {
 
     this.terminoBusqueda = '';
 
-    this.obtenerCategorias();
+    this.buscarCategorias();
 
   }
 
-
-  // ==========================================
   // ABRIR MODAL NUEVO
-  // ==========================================
-
   abrirModal(): void {
 
     this.modoEdicion = false;
-
     this.categoriaEditandoId = null;
-
     this.mensajeError = '';
 
     this.categoriaForm.reset({
-
       nombre: '',
-
       descripcion: ''
-
     });
 
     this.mostrarModal = true;
 
   }
 
-
-  // ==========================================
   // EDITAR CATEGORÍA
-  // ==========================================
-
-  editarCategoria(
-    categoria: Categoria
-  ): void {
+  editarCategoria(categoria: Categoria): void {
 
     this.modoEdicion = true;
-
-    this.categoriaEditandoId =
-      categoria.id;
-
+    this.categoriaEditandoId = categoria.id;
     this.mensajeError = '';
 
     this.categoriaForm.patchValue({
-
       nombre: categoria.nombre,
-
       descripcion: categoria.descripcion
-
     });
 
     this.mostrarModal = true;
 
   }
 
-
-  // ==========================================
   // CERRAR MODAL
-  // ==========================================
-
   cerrarModal(): void {
 
     if (this.guardando) {
-
       return;
-
     }
 
     this.mostrarModal = false;
-
     this.modoEdicion = false;
-
     this.categoriaEditandoId = null;
-
     this.mensajeError = '';
 
   }
 
-
-  // ==========================================
   // GUARDAR CATEGORÍA
-  // ==========================================
-
   guardarCategoria(): void {
 
     if (this.categoriaForm.invalid) {
 
       this.categoriaForm.markAllAsTouched();
-
       return;
 
     }
 
     this.guardando = true;
-
     this.mensajeError = '';
 
     const categoria: CategoriaRequest =
       this.categoriaForm.value;
 
-
-    // ==========================================
     // ACTUALIZAR
-    // ==========================================
-
     if (
       this.modoEdicion &&
       this.categoriaEditandoId !== null
@@ -326,17 +243,11 @@ export class Categorias implements OnInit {
 
           next: (data) => {
 
-            console.log(
-              'Categoría actualizada:',
-              data
-            );
+            console.log('Categoría actualizada:', data);
 
             this.guardando = false;
-
             this.mostrarModal = false;
-
             this.modoEdicion = false;
-
             this.categoriaEditandoId = null;
 
             this.obtenerCategorias();
@@ -364,24 +275,16 @@ export class Categorias implements OnInit {
 
     }
 
-
-    // ==========================================
     // CREAR
-    // ==========================================
-
     this.categoriaService
       .crear(categoria)
       .subscribe({
 
         next: (data) => {
 
-          console.log(
-            'Categoría creada:',
-            data
-          );
+          console.log('Categoría creada:', data);
 
           this.guardando = false;
-
           this.mostrarModal = false;
 
           this.obtenerCategorias();
@@ -407,27 +310,16 @@ export class Categorias implements OnInit {
 
   }
 
-
-  // ==========================================
   // ELIMINAR CATEGORÍA
-  // ==========================================
-
-  eliminarCategoria(
-    categoria: Categoria
-  ): void {
+  eliminarCategoria(categoria: Categoria): void {
 
     const confirmar = window.confirm(
-
       `¿Estás seguro de eliminar la categoría "${categoria.nombre}"?\n\n` +
-
       'Esta acción no se puede deshacer.'
-
     );
 
     if (!confirmar) {
-
       return;
-
     }
 
     this.categoriaService
@@ -441,10 +333,12 @@ export class Categorias implements OnInit {
             categoria.id
           );
 
-          this.categorias =
-            this.categorias.filter(
+          this.categoriasOriginales =
+            this.categoriasOriginales.filter(
               c => c.id !== categoria.id
             );
+
+          this.buscarCategorias();
 
         },
 
@@ -466,17 +360,10 @@ export class Categorias implements OnInit {
 
   }
 
-
-  // ==========================================
   // VALIDAR CAMPO
-  // ==========================================
+  campoInvalido(campo: string): boolean {
 
-  campoInvalido(
-    campo: string
-  ): boolean {
-
-    const control =
-      this.categoriaForm.get(campo);
+    const control = this.categoriaForm.get(campo);
 
     return !!(
       control &&
